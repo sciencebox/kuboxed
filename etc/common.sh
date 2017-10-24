@@ -271,7 +271,7 @@ start_kube_masternode ()
   if [[ "$KUBE_NODE_TYPE" == "master" ]]; then
     echo ""
     echo "Initializing the cluster..."
-    kubeadm init --pod-network-cidr=10.244.0.0/16
+    kubeadm init --pod-network-cidr=10.244.0.0/16 --token-ttl 0
 
     # This can be run as any user (root works as well)
     mkdir -p $HOME/.kube
