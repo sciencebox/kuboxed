@@ -1,0 +1,106 @@
+### POD ###
+apiVersion: v1
+kind: Pod
+metadata:
+  name: &name eos-mgm
+  namespace: boxed
+  labels:
+    app: *name
+spec:
+  restartPolicy: Never
+  hostname: *name
+  subdomain: *name
+  #hostNetwork: true
+  nodeSelector:
+    nodeApp: *name
+  containers:
+  - name: eos-storage
+    image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-storage:v0.1
+    imagePullPolicy: IfNotPresent
+    #ports:
+    #- containerPort: 1094
+    #- containerPort: 1096
+    #- containerPort: 8000
+    volumeMounts:
+    - name: &vm_namespace mgm-namepsace
+      mountPath: /var/eos
+    - name: &vm_logs mgm-logs
+      mountPath: /var/log/eos
+    env:
+    ### PodInfo ###
+    - name: PODINFO_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: PODINFO_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: PODINFO_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    - name: PODINFO_NODE_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+    - name: PODINFO_NODE_NAME
+      valueFrom:
+        fieldRef:
+           fieldPath: spec.nodeName
+    ###
+    - name: THIS_CONTAINER
+      value: "EOS-MGM"
+    - name: DEPLOYMENT_TYPE
+      value: "kubernetes"
+    - name: EOS_ROLE
+      value: "mgm"
+    - name: EOS_MGM_MASTER1
+      value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
+    - name: EOS_MGM_MASTER2
+      value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
+    - name: EOS_MGM_ALIAS
+      value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
+    - name: EOS_MQ_ALIAS
+      #value: "eos-mq.eos-mq.boxed.svc.cluster.local"
+      value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"  # If colocated with mgm
+    - name: LDAP_ENDPOINT
+      value: "ldap.boxed.svc.cluster.local"
+    securityContext:
+      #privileged: true
+      capabilities:
+        add: ["SYS_PTRACE"]
+  volumes:
+  - name: *vm_namespace
+    hostPath:
+      path: /mnt/mgm_namespace/eos_namespace    # Cannot set permission properly on the mount point itself
+      type: DirectoryOrCreate
+  - name: *vm_logs
+    hostPath:
+      path: /kubeVolumes/mgm_logs
+      type: DirectoryOrCreate
+---
+### SERVICE ###
+apiVersion: v1
+kind: Service
+metadata:
+  name: &name eos-mgm
+  namespace: boxed
+spec:
+  selector:
+    app: *name
+  clusterIP: None       # Need headless to resolve to Pod IP
+  ports:
+  - name: xrootd-mgm
+    protocol: TCP
+    port: 1094
+    targetPort: 1094
+  - name: xrootd-sync
+    protocol: TCP
+    port: 1096
+    targetPort: 1096
+  - name: xrootd-http
+    protocol: TCP
+    port: 8000
+    targetPort: 8000
+

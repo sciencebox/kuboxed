@@ -1,0 +1,98 @@
+### POD ###
+apiVersion: v1
+kind: Pod
+metadata:
+  name: &name cernbox
+  namespace: boxed
+  labels:
+    app: *name
+spec:
+  restartPolicy: Always
+  nodeSelector:
+    nodeApp: *name
+  hostname: *name
+  subdomain: *name
+  containers:
+  - name: *name
+    image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.2
+    imagePullPolicy: IfNotPresent
+    #ports:
+    #- containerPort: 8080
+    #- containerPort: 8443
+    volumeMounts:
+    - name: &vm_shares cboxbackend-data
+      mountPath: /var/www/html/cernbox/data
+    - name: &vm_logs-httpd httpd-logs
+      mountPath: /var/log/httpd
+    - name: &vm_logs-shibboleth shibboleth-logs
+      mountPath: /var/log/shibboleth
+    env:
+    ### PodInfo ###
+    - name: PODINFO_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: PODINFO_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: PODINFO_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    - name: PODINFO_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: PODINFO_NODE_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+    ###
+    - name: DEPLOYMENT_TYPE
+      value: "kubernetes"
+    - name: CERNBOXGATEWAY_HOSTNAME     # Hostname of the proxy cernboxgateway
+      value: "up2kube-cernbox.cern.ch"  # It has to match the name of the machine where the proxy is deployed by kubernetes!
+    - name: EOS_MGM_ALIAS
+      value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
+    - name: LDAP_ENDPOINT
+      value: "ldap.boxed.svc.cluster.local"
+    - name: HTTPS_PORT
+      value: "443"
+    - name: AUTH_TYPE
+      value: "shibboleth"
+  volumes:
+  - name: *vm_shares
+    hostPath:
+      path: /mnt/cboxbe_shares/data
+      type: DirectoryOrCreate
+  - name: *vm_logs-httpd
+    hostPath:
+      path: /kubeVolumes/httpd_logs
+      type: DirectoryOrCreate
+  - name: *vm_logs-shibboleth
+    hostPath:
+      path: /kubeVolumes/shibboleth_logs
+      type: DirectoryOrCreate
+---
+### SERVICE ###
+apiVersion: v1
+kind: Service
+metadata:
+  name: &name cernbox
+  namespace: boxed
+spec:
+  selector:
+    app: *name
+  clusterIP: None
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+  type: ClusterIP
+

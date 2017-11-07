@@ -1,0 +1,79 @@
+### POD ###
+apiVersion: v1
+kind: Pod
+metadata:
+  name: &name eos-mq
+  namespace: boxed
+  labels:
+    app: *name
+spec:
+  restartPolicy: Never
+  hostname: *name
+  subdomain: *name
+  #hostNetwork: true
+  nodeSelector:
+    nodeApp: *name
+  containers:
+  - name: eos-storage
+    image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-storage:v0.1
+    imagePullPolicy: IfNotPresent
+    #ports:
+    #- containerPort: 1097       
+    volumeMounts:
+    - name: &vm_logs mq-logs
+      mountPath: /var/log/eos
+    env:
+    ### PodInfo ###
+    - name: PODINFO_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: PODINFO_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: PODINFO_IP
+      valueFrom:
+        fieldRef:
+           fieldPath: status.podIP
+    - name: PODINFO_NODE_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+    - name: PODINFO_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    ###
+    - name: THIS_CONTAINER
+      value: "EOS-MQ"
+    - name: DEPLOYMENT_TYPE
+      value: "kubernetes"
+    - name: EOS_ROLE
+      value: "mq"
+    securityContext:
+      privileged: true
+      capabilities:
+        add: ["SYS_PTRACE"]
+  volumes:
+  - name: *vm_logs
+    hostPath:
+      path: /kubeVolumes/mq_log
+      type: DirectoryOrCreate
+---
+### SERVICE ###
+apiVersion: v1
+kind: Service
+metadata:
+  name: &name eos-mq
+  namespace: boxed
+spec:
+  selector:
+    app: *name
+  clusterIP: None       # Need headless service to resolve to Pod IP
+  ports:
+  - name: xrootd-mq
+    protocol: TCP
+    port: 1097
+    targetPort: 1097
+  #type: NodePort

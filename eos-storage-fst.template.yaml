@@ -1,0 +1,98 @@
+### POD ###
+apiVersion: v1
+kind: Pod
+metadata:
+  name: &name %%%FST_NAME%%%
+  namespace: boxed
+  labels:
+    app: *name
+spec:
+  restartPolicy: Never
+  hostname: *name
+  subdomain: *name
+  #hostNetwork: true
+  nodeSelector:
+    nodeApp: *name
+  containers:
+  - name: eos-storage
+    image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-storage:v0.1
+    imagePullPolicy: IfNotPresent
+    #ports:
+    #- containerPort: 1095
+    #- containerPort: 8001
+    volumeMounts:
+    - name: &vm_userdata fst-userdata
+      mountPath: &fst_userdata_dir /mnt/fst_userdata
+    - name: &vm_logs fst-logs
+      mountPath: /var/log/eos
+    env:
+    ### PodInfo ###
+    - name: PODINFO_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: PODINFO_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+    - name: PODINFO_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    - name: PODINFO_NODE_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+    - name: PODINFO_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    ###
+    - name: THIS_CONTAINER
+      value: "%%%FST_CONTAINER_NAME%%%"
+    - name: DEPLOYMENT_TYPE
+      value: "kubernetes"
+    - name: EOS_ROLE
+      value: "fst"
+    - name: EOS_FST_NUMBER
+      value: "%%%FST_NUMBER%%%"
+    - name: FST_USERDATA_DIR    # Path where the FST writes data. This should be a mapped to a Docker Volume, 
+      value: *fst_userdata_dir  # an Open Stack Volume, or a bare-metal disk mountpoint to make storage persistent.
+    - name: EOS_MGM_ALIAS
+      value: "%%%MGM_ALIAS%%%"
+    - name: EOS_MQ_ALIAS
+      value: "%%%MQ_ALIAS%%%"
+    ###
+    securityContext:
+      privileged: true
+      capabilities:
+        add: ["SYS_PTRACE"]
+  volumes:
+  - name: *vm_userdata
+    hostPath:
+      path: /mnt/fst_userdata
+      type: Directory
+  - name: *vm_logs
+    hostPath:
+      path: /kubeVolumes/mgm_logs
+      type: DirectoryOrCreate
+---
+### SERVICE ###
+apiVersion: v1
+kind: Service
+metadata:
+  name: &name %%%FST_NAME%%%
+  namespace: boxed
+spec:
+  selector:
+    app: *name
+  clusterIP: None       # Need headless to resolve to Pod IP
+  ports:
+  - name: xrootd-fst
+    protocol: TCP
+    port: 1095
+    targetPort: 1095
+  - name: xrootd-8001
+    protocol: TCP
+    port: 8001
+    targetPort: 8001
