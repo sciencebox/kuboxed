@@ -57,12 +57,12 @@ spec:
   volumes:
   - name: *vm_userdb
     hostPath:
-      path: /mnt/ldap_userdb
-      type: Directory
+      path: /mnt/ldap/userdb
+      type: DirectoryOrCreate
   - name: *vm_config
     hostPath:
-      path: /mnt/ldap_config
-      type: Directory
+      path: /mnt/ldap/config
+      type: DirectoryOrCreate
 ---
 ### SERVICE ###
 apiVersion: v1
