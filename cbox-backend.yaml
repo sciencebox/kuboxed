@@ -14,12 +14,14 @@ spec:
   subdomain: *name
   containers:
   - name: *name
-    image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.2
+    image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.3
     imagePullPolicy: IfNotPresent
     #ports:
     #- containerPort: 8080
     #- containerPort: 8443
     volumeMounts:
+    - name: &vm_certs certs
+      mountPath: /etc/boxed/certs
     - name: &vm_shares cboxbackend-data
       mountPath: /var/www/html/cernbox/data
     - name: &vm_logs-httpd httpd-logs
@@ -49,6 +51,8 @@ spec:
         fieldRef:
           fieldPath: status.hostIP
     ###
+    - name: THIS_CONTAINER
+      value: "CERNBOX"
     - name: DEPLOYMENT_TYPE
       value: "kubernetes"
     - name: CERNBOXGATEWAY_HOSTNAME     # Hostname of the proxy cernboxgateway
@@ -60,11 +64,15 @@ spec:
     - name: HTTPS_PORT
       value: "443"
     - name: AUTH_TYPE
-      value: "shibboleth"
+      value: "local"
   volumes:
+  - name: *vm_certs
+    secret:
+      secretName: certs
+      defaultMode: 0644
   - name: *vm_shares
     hostPath:
-      path: /mnt/cboxbe_shares/data
+      path: /mnt/cboxbe_shares_logs/data
       type: DirectoryOrCreate
   - name: *vm_logs-httpd
     hostPath:

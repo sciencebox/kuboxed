@@ -16,7 +16,7 @@ spec:
   dnsPolicy: ClusterFirstWithHostNet
   containers:
   - name: cernboxgateway
-    image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.2
+    image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.3
     imagePullPolicy: IfNotPresent
     ports:
     - name: http
@@ -28,6 +28,8 @@ spec:
       hostPort: 443
       containerPort: 443
     volumeMounts:
+    - name: &vm_certs certs
+      mountPath: /etc/boxed/certs
     - name: &vm_logs cboxgw-logs
       mountPath: /var/log/nginx
     env:
@@ -86,6 +88,10 @@ spec:
     - name: WEBDAV_CLIENT_CERT_PORT
       value: "4443"
   volumes:
+  - name: *vm_certs
+    secret:
+      secretName: certs
+      defaultMode: 0644
   - name: *vm_logs
     hostPath:
       path: /kubeVolumes/cboxgw_logs
