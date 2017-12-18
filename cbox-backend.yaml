@@ -22,6 +22,8 @@ spec:
     volumeMounts:
     - name: &vm_certs certs
       mountPath: /etc/boxed/certs
+    - name: &vm_mysql-config mysql-config
+      mountPath: /etc/boxed/mysql_secrets
     - name: &vm_shares cboxbackend-data
       mountPath: /var/www/html/cernbox/data
     - name: &vm_logs-httpd httpd-logs
@@ -69,6 +71,10 @@ spec:
   - name: *vm_certs
     secret:
       secretName: certs
+      defaultMode: 0644
+  - name: *vm_mysql-config
+    secret:
+      secretName: mysql-config
       defaultMode: 0644
   - name: *vm_shares
     hostPath:
