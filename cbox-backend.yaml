@@ -86,11 +86,11 @@ spec:
       type: DirectoryOrCreate
   - name: *vm_logs-httpd
     hostPath:
-      path: /kubeVolumes/httpd_logs
+      path: /var/kubeVolumes/httpd_logs
       type: DirectoryOrCreate
   - name: *vm_logs-shibboleth
     hostPath:
-      path: /kubeVolumes/shibboleth_logs
+      path: /var/kubeVolumes/shibboleth_logs
       type: DirectoryOrCreate
 ---
 ### SERVICE ###

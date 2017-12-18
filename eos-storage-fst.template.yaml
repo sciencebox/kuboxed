@@ -74,7 +74,7 @@ spec:
       type: Directory
   - name: *vm_logs
     hostPath:
-      path: /kubeVolumes/mgm_logs
+      path: /var/kubeVolumes/fst_logs
       type: DirectoryOrCreate
 ---
 ### SERVICE ###
