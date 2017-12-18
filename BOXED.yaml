@@ -4,11 +4,16 @@ kind: Namespace
 metadata:
   name: boxed
 ---
-### SSL certificates as secrets ###
+
+### SECRETS ###
+#
+### SSL certificates ###
 # Note: These certificates are self-signed and for testing purposes only. Please replace them with proper certificates.
-#       Base64 encoding in required for defining secrets in this yaml file. Please encode your certificates with
+#
+# Note: All Kubernetes secrets must be base64 encoded. Please encode your certificates with
 #       `cat /path/to/your/certificate.key | base64 -w 0` for Linux-based systems
-#  More details available here: https://kubernetes.io/docs/concepts/configuration/secret/
+#       More details available here: https://kubernetes.io/docs/concepts/configuration/secret/
+###
 apiVersion: v1
 kind: Secret
 metadata:
