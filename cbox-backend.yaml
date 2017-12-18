@@ -67,6 +67,10 @@ spec:
       value: "443"
     - name: AUTH_TYPE
       value: "local"
+      #value: "shibboleth"
+    - name: DATABASE_BACKEND
+      value: "sqlite"
+      #value: "mysql"
   volumes:
   - name: *vm_certs
     secret:
