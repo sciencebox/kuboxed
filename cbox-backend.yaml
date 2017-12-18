@@ -14,7 +14,7 @@ spec:
   subdomain: *name
   containers:
   - name: *name
-    image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.3
+    image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.4
     imagePullPolicy: IfNotPresent
     #ports:
     #- containerPort: 8080
