@@ -1,0 +1,302 @@
+### SWAN ###
+
+###
+# Run all the SWAN containers on a single node:
+# - jupyterhub
+# - cmvfs
+# - eos-fuse mount
+# - single-user servers
+#
+# The deployment with Kuberentes Spawner and DaemonSets for CVMFS and EOS-FUSE should be preferred
+###
+
+### DEPLOYMENT ###
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: &name swan
+  namespace: boxed
+  labels:
+    app: *name
+spec:
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: *name
+        name: *name
+    spec:
+      terminationGracePeriodSeconds: 300
+      hostPID: true
+      #hostIPC: true
+      nodeSelector:
+        nodeApp: *name
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+
+      containers:
+      ###
+      # 1. Fuse mount for EOS
+      - name: eos-fuse
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.1
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+        volumeMounts:
+        - name: &vm_cgroup cgroup
+          mountPath: /sys/fs/cgroup
+        - name: &vm_rdv-eos rdv-eos
+          mountPath: /eos:shared
+        - name: &vm_logs-eosfuse eosfuse-logs
+          mountPath: /var/log/eos/fuse
+        env:
+        ### PodInfo ###
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        ###
+        - name: THIS_CONTAINER
+          value: "EOS-FUSE"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: LDAP_ENDPOINT
+          value: "ldap.boxed.svc.cluster.local"
+        - name: EOS_MGM_ENDPOINT
+          value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
+        - name: EOS_INSTANCE_NAME       # Required to unmount (eventual) previous mountpoints
+          value: "eosdocker"            # See eos-fuse.d/start.sh --> mounted_folders=...
+        - name: EOS_FOLDER
+          value: "/eos"
+        lifecycle:
+          preStop:
+            exec:
+              command: ["service", "eosd", "stop"]      # Cleans the mount point on the host machine
+                                                        # It does not work if the container is abruptly killed
+
+      ###
+      # 2. CVMFS (and squid proxy) for ROOT
+      - name: cvmfs
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.1
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+        volumeMounts:
+        - name: &vm_devfuse devfuse
+          mountPath: /dev/fuse
+        - name: &vm_rdv-cvmfs rdv-cvmfs
+          mountPath: /cvmfs:shared
+        env:
+        ### PodInfo ###
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        ###
+        env:
+        - name: THIS_CONTAINER
+          value: "CVMFS"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: CVMFS_FOLDER
+          value: "/cvmfs"
+
+      ###
+      # 3. JupyterHub
+      - name: jupyterhub
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.3
+        imagePullPolicy: IfNotPresent
+       #securityContext:
+        #  capabilities:
+        #    add: ["NET_ADMIN"]         # Enable jupyterhub container to configure iptables
+        ports:
+        - name: http
+          protocol: TCP
+          hostPort: &HTTP_PORT 80
+          containerPort: *HTTP_PORT
+        - name: https
+          protocol: TCP
+          hostPort: &HTTPS_PORT 443
+          containerPort: *HTTPS_PORT
+        volumeMounts:
+        - name: &vm_certs certs
+          mountPath: /etc/boxed/certs
+        - name: &vm_docker-socket docker-socket
+          mountPath: /var/run/docker.sock
+        - name: &vm_logs-jupyterhub jupyterhub-logs
+          mountPath: /var/log/jupyterhub 
+        - name: &vm_logs-httpd httpd-logs
+          mountPath: /var/log/httpd
+        - name: &vm_logs-shibboleth shibboleth-logs
+          mountPath: /var/log/shibboleth
+        #- name: rdv-eos        # See notes on EOS-FUSE and CVMFS mounts
+        #  mountPath: /eos:shared
+        #- name: rdv-cvmfs
+        #  mountPath: /cvmfs:shared
+        env:
+        ### PodInfo ###
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        ###
+        - name: THIS_CONTAINER
+          value: "JUPYTERHUB"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: HTTP_PORT
+          value: "80"
+        - name: HTTPS_PORT
+          value: "443"
+        - name: HOSTNAME            # Assume JupyterHub is exposed directly on the host where it runs
+          valueFrom:                # No Kubernetes services defined
+            fieldRef:               # Entrypoint will be: https://<nodeName>
+              fieldPath: spec.nodeName
+        - name: AUTH_TYPE
+          value: "local"
+        - name: LDAP_ENDPOINT
+          value: "ldap.boxed.svc.cluster.local"
+        - name: CONTAINER_IMAGE
+          value: "cernphsft/systemuser:v2.10"
+        - name: DOCKER_NETWORK_NAME
+          value: "jupyternet"
+        - name: CVMFS_FOLDER
+          value: "/cvmfs"
+        - name: EOS_FOLDER
+          value: "/eos"
+
+      # Volumes declaration
+      volumes:
+      - name: *vm_certs
+        secret:
+          secretName: certs
+          defaultMode: 0644
+      - name: *vm_devfuse       # For CVMFS
+        hostPath:
+          path: /dev/fuse
+      - name: *vm_cgroup        # For EOS-FUSE mount
+        emptyDir: {}            # Fooling systemd to init the eosd service
+        #hostPath:
+        #  path: /sys/fs/cgroup
+      - name: *vm_docker-socket # For JupyterHub to start single-user containers
+        hostPath: 
+          path: /var/run/docker.sock
+      - name: *vm_rdv-eos
+        hostPath:
+          path: /eos    # See notes on EOS-FUSE and CVMFS mounts
+      - name: *vm_rdv-cvmfs
+        hostPath:
+          path: /cvmfs  # See notes on EOS-FUSE and CVMFS mounts
+      - name: *vm_logs-eosfuse
+        hostPath:
+          path: /var/kubeVolumes/eosfuse_logs
+          type: DirectoryOrCreate
+      - name: *vm_logs-jupyterhub
+        hostPath:
+          path: /var/kubeVolumes/jupyterhub_logs
+          type: DirectoryOrCreate
+      - name: *vm_logs-httpd
+        hostPath:
+          path: /var/kubeVolumes/httpd_logs
+          type: DirectoryOrCreate
+      - name: *vm_logs-shibboleth
+        hostPath:
+          path: /var/kubeVolumes/shibboleth_logs
+          type: DirectoryOrCreate
+
+---
+### SERVICE ###
+# Note: Only needed when hostNetwork is not used, 
+#       otherwise JupyterHub is directly accessible on {HTTP, HTTPS}_PORTS
+apiVersion: v1
+kind: Service
+metadata:
+  name: &name swan
+  namespace: boxed
+spec:
+  selector:
+    app: *name
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30080
+    protocol: TCP
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+    nodePort: 30443
+  type: NodePort
+
+###
+### Notes on EOS-FUSE and CVMFS mounts ###
+# eos-fuse and cvmfs containers mount EOS and CVMFS via fuse mount.
+# In order to export such mounts to the host machine or to other containers, 
+# they must EXPLICITLY be mounted as shared (or rshared).
+# Default configuration for Kubernetes is rprivate, which does not allow 
+# mount propagation.
+#
+# Moreover, EOS and CVMFS mounts must be available on the host machine
+# because we leverage on the daemon running on the host to start
+# single-user's containers.
+# 1--> It is useless to mount EOS/CVMFS on the jupyterhub container as
+#       there is no docker daemon running there.
+# 2--> The daemon on the host has the context of the host and
+#       not the context of the jupyterhub container.
+# As a side effect, EOS and CVMFS will be visible on the host machine.
+###
+###

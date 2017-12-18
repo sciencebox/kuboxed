@@ -1,0 +1,293 @@
+### SWAN ###
+
+###
+# Deployment with KubeSpawner and an independent CVMFS clients on each worker node
+# I.e., nodes where single-user servers can be executed
+#
+# The deployment with a cluster-level SQUID proxy should be preferred
+###
+
+# Jupyterhub -- Deployment
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: &name swan
+  namespace: &namespace boxed
+  labels:
+    app: *name
+spec:
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: *name
+        name: *name
+    spec:
+      terminationGracePeriodSeconds: 60
+      nodeSelector:
+        nodeApp: *name
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: jupyterhub
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.4
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          protocol: TCP
+          hostPort: &HTTP_PORT 80
+          containerPort: *HTTP_PORT
+        - name: https
+          protocol: TCP
+          hostPort: &HTTPS_PORT 443
+          containerPort: *HTTPS_PORT
+        volumeMounts:
+        - name: &vm_certs certs
+          mountPath: /etc/boxed/certs
+        - name: &vm_JHconfig jupyterhub-data
+          mountPath: /srv/jupyterhub/jupyterhub_data
+        - name: &vm_logs-jupyterhub jupyterhub-logs
+          mountPath: /var/log/jupyterhub 
+        - name: &vm_logs-httpd httpd-logs
+          mountPath: /var/log/httpd
+        - name: &vm_logs-shibboleth shibboleth-logs
+          mountPath: /var/log/shibboleth
+        env:
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: THIS_CONTAINER
+          value: "JUPYTERHUB"
+        - name: DEPLOYMENT_TYPE
+          value: "kubespawner"
+        - name: HTTP_PORT
+          value: "80"
+        - name: HTTPS_PORT
+          value: "443"
+        - name: HOSTNAME            # Assume JupyterHub is exposed directly on the host where it runs
+          valueFrom:                # No Kubernetes services defined
+            fieldRef:               # Entrypoint will be: https://<nodeName>
+              fieldPath: spec.nodeName
+        - name: AUTH_TYPE
+          value: "local"
+        - name: LDAP_ENDPOINT
+          value: "ldap.boxed.svc.cluster.local"
+        - name: CONTAINER_IMAGE
+          value: "cernphsft/systemuser:v2.11"
+        - name: NAMESPACE
+          value: *namespace
+        - name: NODE_SELECTOR_KEY
+          value: "nodeApp"
+        - name: NODE_SELECTOR_VALUE
+          value: "swan-users"
+        - name: CVMFS_FOLDER
+          value: "/cvmfs"
+        - name: EOS_FOLDER
+          value: "/eos"
+      volumes:
+      - name: *vm_certs
+        secret:
+          secretName: certs
+          defaultMode: 0644
+      - name: *vm_JHconfig
+        hostPath:
+          path: /mnt/jupyterhub_data
+          type: DirectoryOrCreate
+      - name: *vm_logs-jupyterhub
+        hostPath:
+          path: /var/kubeVolumes/jupyterhub_logs
+          type: DirectoryOrCreate
+      - name: *vm_logs-httpd
+        hostPath:
+          path: /var/kubeVolumes/httpd_logs
+          type: DirectoryOrCreate
+      - name: *vm_logs-shibboleth
+        hostPath:
+          path: /var/kubeVolumes/shibboleth_logs
+          type: DirectoryOrCreate
+
+---
+# CVMFS client and EOS fuse gateway -- DaemonSet
+#
+# Note: Deploy EOS Fuse and CVMFS daemons on all the nodes where
+#       single-user sessions can land. Such nodes are identified
+#       via NodeSelector key-value provided by Kubernetes.
+#       E.g., nodeApp: swan-users
+#
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: &daemons swan-daemons
+  namespace: &namespace boxed
+  labels:
+    app: *daemons
+spec:
+  template:
+    metadata:
+      labels:
+        app: *daemons
+        name: *daemons
+    spec:
+      hostPID: true
+      terminationGracePeriodSeconds: 300
+      nodeSelector:
+        nodeApp: "swan-users"
+      containers:
+      ###
+      # 1. EOS-FUSE
+      - name: eos-fuse
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.2
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+        volumeMounts:
+        - name: &vm_cgroup cgroup
+          mountPath: /sys/fs/cgroup
+        - name: &vm_rdv-eos rdv-eos
+          mountPath: /eos:shared
+        - name: &vm_logs-eosfuse eosfuse-logs
+          mountPath: /var/log/eos/fuse
+        env:
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+             fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: THIS_CONTAINER
+          value: "EOS-FUSE"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: LDAP_ENDPOINT
+          value: "ldap.boxed.svc.cluster.local"
+        - name: EOS_MGM_ENDPOINT
+          value: "eos-mgm.boxed.svc.cluster.local"
+        - name: EOS_FOLDER
+          value: "/eos"
+        - name: EOS_GATEWAY_SELF_REGISTRATION
+          value: "true"
+        - name: EOS_GATEWAY_AUTH
+          value: "unix"
+        lifecycle:
+          preStop:
+            exec:
+              command: ["bash", "/root/stop.sh"]
+      ###
+      # 2. CVMFS
+      - name: cvmfs
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.2
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+        volumeMounts:
+        - name: &vm_devfuse devfuse
+          mountPath: /dev/fuse
+        - name: &vm_rdv-cvmfs rdv-cvmfs
+          mountPath: /cvmfs:shared
+        env:
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        env:
+        - name: THIS_CONTAINER
+          value: "CVMFS"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: CVMFS_FOLDER
+          value: "/cvmfs"
+
+      volumes:
+      # EOS-FUSE
+      - name: *vm_cgroup
+        emptyDir: {}            # Fooling systemd to init the eosd service
+      - name: *vm_rdv-eos
+        hostPath:
+          path: /eos
+      - name: *vm_logs-eosfuse
+        hostPath:
+          path: /var/kubeVolumes/eosfuse_logs
+          type: DirectoryOrCreate
+      # CVMFS
+      - name: *vm_devfuse
+        hostPath:
+          path: /dev/fuse
+      - name: *vm_rdv-cvmfs
+        hostPath:
+          path: /cvmfs
+
+---
+### SERVICE ###
+# Note: Only needed when hostNetwork is not used, 
+#       otherwise JupyterHub is directly accessible on {HTTP, HTTPS}_PORTS
+apiVersion: v1
+kind: Service
+metadata:
+  name: &name swan
+  namespace: &namespace boxed
+spec:
+  selector:
+    app: *name
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30081
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+    nodePort: 30444
+  type: NodePort
