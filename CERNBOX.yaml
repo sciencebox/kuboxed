@@ -1,0 +1,396 @@
+### CERNBOX ###
+#
+# CERNBox service
+# Deploys:
+#  * CERNBox web service
+#  * CERNBox Gateway redirecting traffic to EOS
+#  * CERNBox MySQL database
+###
+
+
+### SECRETS ###
+#
+### MySQL (MariaDB) configuration variables as secrets ###
+# Please read more here on the parameters to be configured: https://hub.docker.com/r/library/mariadb/
+#
+# Note: The MySQL user and password provided below are either randomly generated or dummy ones.
+#       Please consider replacing them with proper passwords when deploying the service for the first time.
+#       You can read more on how to manage user accounts on MySQL here: https://dev.mysql.com/doc/refman/5.7/en/user-account-management.html
+#       Changing the root password requires to rebuild the cernboxmysql image. Please read more at https://gitlab.cern.ch/cernbox/boxed/tree/master/cernboxmysql.d
+#
+# Note: All Kubernetes secrets must be base64 encoded. Please use `echo "YOUR_STRING" | base64 -w 0` for Linux-based systems
+#       More details available here: https://kubernetes.io/docs/concepts/configuration/secret/
+###
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-config
+  namespace: boxed
+type: Opaque
+data:
+  # Random root password: "1qvj1yh2ufc5fizh"
+  mysql_root_password: MXF2ajF5aDJ1ZmM1Zml6aAo=
+  # Database user: "cernbox_backend"
+  mysql_user: Y2VybmJveF9iYWNrZW5kCg==
+  # Database password: "cernbox_backend_1234567890"
+  mysql_password: Y2VybmJveF9iYWNrZW5kXzEyMzQ1Njc4OTAK
+
+
+### PODS ###
+---
+# MySQL -- Deployment
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: &name cernboxmysql
+  namespace: &namespace boxed
+  labels:
+    app: *name
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: *name
+        name: *name
+    spec:
+      terminationGracePeriodSeconds: 60
+      restartPolicy: Always
+      nodeSelector:
+        # Run together with the CERNBox backend (ownCloud) pod
+        nodeApp: cernbox
+      containers:
+      - name: *name
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxmysql:v0
+        imagePullPolicy: IfNotPresent
+        #ports:
+        #- name: http
+        #  protocol: TCP
+        #  hostPort: &MYSQL_PORT 3306
+        #  containerPort: *MYSQL_PORT
+        volumeMounts:
+        - name: &vm_mysql-config mysql-config
+          mountPath: /run/secrets
+        - name: &vm_shares mysql-sharesdb
+          mountPath: /var/lib/mysql
+        env:
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: THIS_CONTAINER
+          value: "CERNBOXMySQL"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: MYSQL_ROOT_PASSWORD_FILE
+          value: "/run/secrets/mysql_root_password"
+        - name: MYSQL_USER_FILE
+          value: "/run/secrets/mysql_user"
+        - name: MYSQL_PASSWORD_FILE
+          value: "/run/secrets/mysql_password"
+        - name: MYSQL_DATABASE_NAME
+          # WARNING: Do not change this value, otherwise the cernboxmysql image must be rebuilt
+          # Please read more at https://gitlab.cern.ch/cernbox/boxed/tree/master/cernboxmysql.d
+          value: "cernbox"
+      volumes:
+      - name: *vm_mysql-config
+        secret:
+          secretName: mysql-config
+          defaultMode: 0644
+      - name: *vm_shares
+        hostPath:
+          path: /mnt/cbox_shares_db/cbox_MySQL
+          type: DirectoryOrCreate
+
+---
+# CERNBox Backend (ownCloud) -- Deployment
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: &name cernbox
+  namespace: &namespace boxed
+  labels:
+    app: *name
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: *name
+        name: *name
+    spec:
+      terminationGracePeriodSeconds: 60
+      restartPolicy: Always
+      nodeSelector:
+        nodeApp: *name
+      hostname: *name
+      subdomain: *name
+      containers:
+      - name: *name
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.4
+        imagePullPolicy: IfNotPresent
+        #ports:
+        #- name: http
+        #  protocol: TCP
+        #  hostPort: &MYSQL_PORT 3306
+        #  containerPort: *MYSQL_PORT
+        volumeMounts:
+        - name: &vm_certs certs
+          mountPath: /etc/boxed/certs
+        - name: &vm_mysql-config mysql-config
+          mountPath: /etc/boxed/mysql_secrets
+        #- name: &vm_cbox-config cboxbackend-config
+        #  mountPath: /var/www/html/cernbox/config
+        - name: &vm_cbox-data cboxbackend-data
+          mountPath: /var/www/html/cernbox/data
+        - name: &vm_logs-httpd httpd-logs
+          mountPath: /var/log/httpd
+        - name: &vm_logs-shibboleth shibboleth-logs
+          mountPath: /var/log/shibboleth
+        env:
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+        - name: THIS_CONTAINER
+          value: "CERNBOX"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: CERNBOXGATEWAY_HOSTNAME         # Hostname of the proxy cernboxgateway
+          value: "up2kube-cernbox.cern.ch"      # It has to match the name of the machine where the proxy is deployed by kubernetes!
+        - name: EOS_MGM_ALIAS
+          value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
+        - name: LDAP_ENDPOINT
+          value: "ldap.boxed.svc.cluster.local"
+        - name: HTTPS_PORT
+          value: "443"
+        - name: AUTH_TYPE
+          value: "local"
+          #value: "shibboleth"
+        - name: DATABASE_BACKEND
+          #value: "sqlite"
+          value: "mysql"
+      volumes:
+      - name: *vm_certs
+        secret:
+          secretName: certs
+          defaultMode: 0644
+      - name: *vm_mysql-config
+        secret:
+          secretName: mysql-config
+          defaultMode: 0644
+      - name: *vm_cbox-data
+        hostPath:
+          path: /mnt/cbox_shares_db/cbox_data
+          type: DirectoryOrCreate
+      - name: *vm_logs-httpd
+        hostPath:
+          path: /var/kubeVolumes/httpd_logs
+          type: DirectoryOrCreate
+      - name: *vm_logs-shibboleth
+        hostPath:
+          path: /var/kubeVolumes/shibboleth_logs
+          type: DirectoryOrCreate
+
+---
+# CERNBox Gateway (nginx proxy) -- Deployment
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: &name cernboxgateway
+  namespace: &namespace boxed
+  labels:
+    app: *name
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: *name
+        name: *name
+    spec:
+      terminationGracePeriodSeconds: 60
+      restartPolicy: Always
+      nodeSelector:
+        nodeApp: *name
+      hostname: *name
+      subdomain: *name
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: *name
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.3
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          protocol: TCP
+          hostPort: 80
+          containerPort: 80
+        - name: https
+          protocol: TCP
+          hostPort: 443
+          containerPort: 443
+        volumeMounts:
+        - name: &vm_certs certs
+          mountPath: /etc/boxed/certs
+        - name: &vm_logs cboxgateway-logs
+          mountPath: /var/log/nginx
+        env:
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: THIS_CONTAINER
+          value: "CERNBOXGATEWAY"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: HOSTNAME            # Assume the gateway is exposed directly on the host where it runs
+          valueFrom:                # No Kubernetes services defined
+            fieldRef:               # Entrypoint will be: https://<nodeName>
+              fieldPath: spec.nodeName
+        - name: HTTP_PORT
+          value: "80"
+        - name: HTTPS_PORT
+          value: "443"
+        - name: EOS_MGM_ALIAS
+          value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
+        - name: EOS_MGM_ALIAS_PORT
+          value: "8000"
+        - name: SWAN_BACKEND
+          value: "up2kube-swan.cern.ch"
+        - name: SWAN_BACKEND_PORT
+          value: "443"
+        - name: OWNCLOUD_BACKEND
+          value: "cernbox.cernbox.boxed.svc.cluster.local"
+        - name: OWNCLOUD_BACKEND_PORT
+          value: "443"
+        - name: LDAP_BACKEND1
+          value: "ldap.boxed.svc.cluster.local"
+        - name: LDAP_BACKEND2
+          value: "ldap.boxed.svc.cluster.local"
+        - name: WEBDAV_CLIENT_CERT_PORT
+          value: "4443"
+      volumes:
+      - name: *vm_certs
+        secret:
+          secretName: certs
+          defaultMode: 0644
+      - name: *vm_logs
+        hostPath:
+          path: /var/kubeVolumes/cboxgateway_logs
+          type: DirectoryOrCreate
+
+
+
+### SERVICES ###
+---
+# MySQL -- Service #
+apiVersion: v1
+kind: Service
+metadata:
+  name: &name cernboxmysql
+  namespace: &namespace boxed
+spec:
+  selector:
+    app: *name
+  ports:
+  - name: http
+    protocol: TCP
+    port: 3306
+    targetPort: 3306
+
+---
+# CERNBox Backend (ownCloud) -- Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: &name cernbox
+  namespace: boxed
+spec:
+  selector:
+    app: *name
+  clusterIP: None
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+  type: ClusterIP
+
+---
+# CERNBox Gateway (nginx proxy) -- Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: &name cernboxgateway
+  namespace: boxed
+spec:
+  selector:
+    app: *name
+  clusterIP: None
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
+    #nodePort: 30081
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 443
+    #nodePort: 30444    
+  type: ClusterIP
+  #type: NodePort
+
