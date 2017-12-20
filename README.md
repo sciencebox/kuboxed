@@ -1,2 +1,80 @@
-# kuboxed
-Boxed in Kubernetes
+## System Architecture
+The system consists of three service bubbles matching the provided services: EOS (orange), CERNBOX (blue), and SWAN (green).
+
+
+        Picture
+
+
+Each of the three bubbles contains multiple Docker containers that are required to run in order to have the service up and available.
+In what follows, a short description of the containers required for each service is provided.
+
+### EOS
+  1. EOS Management Server (MGM): The management node playing the role of the EOS cluster head and storing the namespace (file metadata) information.
+  2. EOS File Storage Server (FST): The file server where actual file payload is stored. Multiple instances of the file server container can be executed concurrently so to scale out the storage requirements.
+
+
+### CERNBox
+  1. CERNBox: The CERNBox Web interface providing sharing capabilities and integration with other applications.
+  2. CERNBox Gateway: The proxy redirecting Web traffic to CERNBox backend and file transfers to EOS.
+  3. CERNBox MySQL: The MySQL (MariaDB) server providing database backend to CERNBox.
+
+
+### SWAN
+  1. JupyterHub: The server providing capabilities to spawn, manage, and proxy multiple Jupyter sessions for single users.
+  2. EOS Fuse Client: The EOS Fuse client to access EOS as a mounted file system
+  3. CVMFS Client: The CVMFS client to access scientific software libraries and packages from the WLCG grid.
+
+-----
+
+## Deployment Guidelines and Requirements
+Boxed in Kubernetes meets the requirement of high availability and scalability for production deployments.
+Containers are continuously monitored by the Kubernetes master, which restarts the failed ones, while processes inside each container are monitored by a supervisor daemon.
+In addition, Boxed in Kubernetes enables the system administrator to scale out storage (by deploying additional EOS File Storage Servers) and computing power (by deploying additional worker nodes for SWAN). Additional information is provided ahead when describing the deployment steps of each service.
+
+The minimal requirements for deploying Boxed in a Kubernetes cluster are as follows.
+
+##### 1. Number of cluster nodes
+The minimum amount of nodes is 2, but it is strongly recommended to run the services on 7 or more nodes to isolate system components and avoid single points of failure. The Kubernetes master node is not part of the count.
+
+The provided yaml files for deployment make use of:
+
+  * 1 + N nodes for EOS -- 1 for the Management Server (MGM) and N for N independent File Storage Servers (FST);
+  * 2 nodes for CERNBox -- 1 for the CERNBox Backend (Web interface and MySQL database) and 1 for the CERNBox Gateway;
+  * 2 nodes for SWAN -- 1 for JupyterHub and 1 playing the role of worker where single-user's sessions are spawned. The worker node executes the containers with the EOS Fuse Client and the CVMFS client.
+
+
+##### 2. Memory
+There is no minimum memory requirement as it mostly relates to the foreseen pool of users and system load.
+It is however recommended to:
+
+  * Grant as much memory as possible to the node running the EOS Management Server. The current implementation of EOS loads the entire namespace in memory. While for small deployments 8GB of memory can be sufficient, for bigger deployment it is recommended to monitor the memory consumption and possibly relocate the EOS Management Server on a bigger machine.
+
+  * SWAN worker nodes require an amount of memory proportional to the load they have to sustain and the requirements of jobs executed by users. Adding more worker nodes can alleviate the problem to share the load on a larger pool of machines.
+
+
+##### 3. Storage
+Persistent storage is key for many components of Boxed. While Kubernetes easily relocates containers to other nodes, this does not hold true for storage.
+
+Persistent storage is provided by mounting a *hostPath* volume into the container. This implies that some containers of Boxed are bound to specific nodes of the cluster.
+To make the container decoupled from the node, it is highly recommended to use external volumes (e.g., Cinder Volumes in OpenStack clusters), which can be detached and reattached to different nodes if required. More details are provided in Preparation section.
+
+Why not using *PersistentVolumeClaims*?
+Please, read the additional Notes on External Capabilities for Network and Persistent Storage.
+
+
+##### 4. Network
+The CERNBox and the SWAN service require to be reachable on usual HTTP and HTTPS ports. 
+While it would be possible to user the Kubernetes master as a gateway (leveraging on *NodePort* service type), Kubernetes does not allow to expose ports outside the [30000-32767] range.
+
+Reachability on HTTP and HTTPS ports is achieved by using the *hostNetwork* on the cluster nodes hosting the CERNBox Gatewway containers and the JupyterHub container.
+
+No special requirements exist as far as the network speed is concerned. Just remind all the traffic from/to synchronization clients to the CERNBox service is handled by the CERNBox Gateway container.
+
+Why not using external aliases or cloud load balancers? Please, read the additional Notes on External Capabilities for Network and Persistent Storage.
+
+
+##### *Notes on External Capabilities for Network and Persistent Storage*
+
+To maximize the compatibility of Boxed with diverse public and private clouds, the provided yaml files for deployment do not take advantage of any externally-provided capability such as ingress controllers, external load balancers, persistent volumes, etc.
+Such capabilities are typically available on some IaaS clouds only (e.g., Google Compute Engine, Amazon Web Services) and relying on them could constitute a serious obstacle for the deployment of Boxed.
+
