@@ -8,21 +8,22 @@ The system consists of three service bubbles matching the provided services: EOS
 Each of the three bubbles contains multiple Docker containers that are required to run in order to have the service up and available.
 In what follows, a short description of the containers required for each service is provided.
 
-### EOS
+#### EOS
   1. EOS Management Server (MGM): The management node playing the role of the EOS cluster head and storing the namespace (file metadata) information.
   2. EOS File Storage Server (FST): The file server where actual file payload is stored. Multiple instances of the file server container can be executed concurrently so to scale out the storage requirements.
 
 
-### CERNBox
+#### CERNBox
   1. CERNBox: The CERNBox Web interface providing sharing capabilities and integration with other applications.
   2. CERNBox Gateway: The proxy redirecting Web traffic to CERNBox backend and file transfers to EOS.
   3. CERNBox MySQL: The MySQL (MariaDB) server providing database backend to CERNBox.
 
 
-### SWAN
+#### SWAN
   1. JupyterHub: The server providing capabilities to spawn, manage, and proxy multiple Jupyter sessions for single users.
   2. EOS Fuse Client: The EOS Fuse client to access EOS as a mounted file system
   3. CVMFS Client: The CVMFS client to access scientific software libraries and packages from the WLCG grid.
+
 
 -----
 
@@ -33,7 +34,7 @@ In addition, Boxed in Kubernetes enables the system administrator to scale out s
 
 The minimal requirements for deploying Boxed in a Kubernetes cluster are as follows.
 
-##### 1. Number of cluster nodes
+#### 1. Number of cluster nodes
 The minimum amount of nodes is 2, but it is strongly recommended to run the services on 7 or more nodes to isolate system components and avoid single points of failure. The Kubernetes master node is not part of the count.
 
 The provided yaml files for deployment make use of:
@@ -43,7 +44,7 @@ The provided yaml files for deployment make use of:
   * 2 nodes for SWAN -- 1 for JupyterHub and 1 playing the role of worker where single-user's sessions are spawned. The worker node executes the containers with the EOS Fuse Client and the CVMFS client.
 
 
-##### 2. Memory
+#### 2. Memory
 There is no minimum memory requirement as it mostly relates to the foreseen pool of users and system load.
 It is however recommended to:
 
@@ -52,7 +53,7 @@ It is however recommended to:
   * SWAN worker nodes require an amount of memory proportional to the load they have to sustain and the requirements of jobs executed by users. Adding more worker nodes can alleviate the problem to share the load on a larger pool of machines.
 
 
-##### 3. Storage
+#### 3. Storage
 Persistent storage is key for many components of Boxed. While Kubernetes easily relocates containers to other nodes, this does not hold true for storage.
 
 Persistent storage is provided by mounting a *hostPath* volume into the container. This implies that some containers of Boxed are bound to specific nodes of the cluster.
@@ -62,19 +63,116 @@ Why not using *PersistentVolumeClaims*?
 Please, read the additional Notes on External Capabilities for Network and Persistent Storage.
 
 
-##### 4. Network
+#### 4. Network
 The CERNBox and the SWAN service require to be reachable on usual HTTP and HTTPS ports. 
-While it would be possible to user the Kubernetes master as a gateway (leveraging on *NodePort* service type), Kubernetes does not allow to expose ports outside the [30000-32767] range.
+While it would be possible to use the Kubernetes master as a gateway (leveraging on *NodePort* service type), Kubernetes does not allow to expose ports outside the [30000-32767] range.
 
-Reachability on HTTP and HTTPS ports is achieved by using the *hostNetwork* on the cluster nodes hosting the CERNBox Gatewway containers and the JupyterHub container.
+Reachability on HTTP and HTTPS ports is achieved by using the *hostNetwork* on the cluster nodes hosting the CERNBox Gateway containers and the JupyterHub container.
 
 No special requirements exist as far as the network speed is concerned. Just remind all the traffic from/to synchronization clients to the CERNBox service is handled by the CERNBox Gateway container.
 
 Why not using external aliases or cloud load balancers? Please, read the additional Notes on External Capabilities for Network and Persistent Storage.
 
 
-##### *Notes on External Capabilities for Network and Persistent Storage*
+#### *Notes on External Capabilities for Network and Persistent Storage*
 
 To maximize the compatibility of Boxed with diverse public and private clouds, the provided yaml files for deployment do not take advantage of any externally-provided capability such as ingress controllers, external load balancers, persistent volumes, etc.
 Such capabilities are typically available on some IaaS clouds only (e.g., Google Compute Engine, Amazon Web Services) and relying on them could constitute a serious obstacle for the deployment of Boxed.
 
+
+-----
+
+## Preparation for Deployment
+
+### 1. Create the Kubernetes cluster
+*You can ignore this step if you have a Kuberenetes cluster already configured. Please, double-check the software versions reported below.*
+
+In order to have single nodes being part of a Kubernetes cluster, specific software must be installed. 
+
+##### Automatic node configuration
+Please, consider running the provided script `InitNode.sh` for CentOS 7 based systems to install all the required packages and configure the node as Master or Worker in the scope of the Kubernetes cluster. 
+Other Operating Systems will be supported in future. For the time being, please refer to the following "Manual installation" instructions.
+
+##### Manual Installation
+Required software:
+
+| Software | Min. Version   |
+| -------- | -------------- |
+| sudo     | *not-relevant* |
+| wget     | *not-relevant* |
+| git      | *not-relevant* |
+| Docker   | 17.03.2.ce     |
+| kubelet  | 1.8.0          |
+| kubeadm  | 1.8.0          |
+| kubectl  | 1.8.0          |
+
+To install Docker Community Edition (CE), you can refer to the official documentation: https://docs.docker.com/engine/installation/
+
+To initialize a Kubernetes cluster via kubeadm, you can refer to the official guide: https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/ 
+
+
+##### Kubernetes Network Plugin
+Kubernetes requires a third-party network plugin to communicate within the cluster. The deployment of Boxed has been tested with the *Flannel Overlay Network*.
+More information available here: https://kubernetes.io/docs/concepts/cluster-administration/networking/#flannel
+
+
+### 2. Assign containers to cluster nodes
+To comply with the persistent storage and network configuration requirements, a univocal assignment between some cluster nodes and the containers they run must be put in place.
+
+Kubernetes provide the ability assign containers to nodes via `kubectl` (https://kubernetes.io/docs/concepts/configuration/assign-pod-node/). To label one node, it is sufficient to issue the command:
+```kubectl label nodes <node-name> <label-key>=<label-value>```.
+
+
+##### Example for assigning a container to a node
+
+The yaml file describing our test application must include the specification:
+```
+spec:
+  nodeSelector:
+    nodeApp: TESTAPP
+```
+
+To assign the test application container to the node `testcluster.cern.ch`, it is required to label the node consistently:
+```
+kubectl label node testcluster.cern.ch nodeApp=TESTAPP
+
+kubectl get nodes --show-labels
+NAME                          STATUS    ROLES     AGE       VERSION   LABELS
+testcluster.cern.ch            Ready     <none>    1d       v1.8.0    beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=testcluster.cern.ch,nodeApp=TESTAPP
+```
+
+
+##### Container assignments required for the deployment of Boxed
+To deploy Boxed, the following assigments between containers and nodes are required:
+
+| Container Name | Label Key | Label Value    | Special Requirements       | Notes |
+| --------       | --------- | -------------- | -------------------------- | ----- |
+| ldap           | nodeApp   | ldap           | Persistent Storage         | 4
+| eos-mgm        | nodeApp   | eos-mgm        | Memory, Persistent Storage | 1
+| eos-fst*N*     | nodeApp   | eos-fst*N*     | Persistent Storage         | 1, 2
+| cernbox        | nodeApp   | cernbox        | Persistent Storage         | 3
+| cernboxmysql   | nodeApp   | cernbox        | Persistent Storage         | 3
+| cernboxgateway | nodeApp   | cernboxgateway | Host Network               |
+| swan           | nodeApp   | swan           | Host Network, Persistent Storage |
+| swan-daemons   | nodeApp   | swan-users     | Memory | Swan worker nodes for single-user's sessions |
+
+*Note 1*: Persistent Storage is used by EOS to store users' data (by default, two replicas of files are stored on different FSTs) and metadata (namespace stored on the MGM). The loss of either part causes the loss of user files!
+
+*Note 2*: It is recommended to run ONLY one FST on a cluster node to avoid the risk of losing or being unable to access users' data due to node failures. FST containers are "cheap" and can run on small-sized Virtual Machines.
+
+*Note 3*: CERNBox and CERNBox MySQL require Persistent Storage to store sharing information and CERNBox app configuration.
+
+*Note 4*: A local LDAP server is required to provide user information and unix account to services. LDAP uses Persistent Storage to save user information.
+
+
+
+
+
+
+
+
+
+
+-----
+
+## Deployment of Services
