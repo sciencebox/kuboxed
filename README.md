@@ -89,11 +89,11 @@ Such capabilities are typically available on some IaaS clouds only (e.g., Google
 
 In order to have single nodes being part of a Kubernetes cluster, specific software must be installed. 
 
-##### Automatic node configuration
+#### Automatic node configuration
 Please, consider running the provided script `InitNode.sh` for CentOS 7 based systems to install all the required packages and configure the node as Master or Worker in the scope of the Kubernetes cluster. 
 Other Operating Systems will be supported in future. For the time being, please refer to the following "Manual installation" instructions.
 
-##### Manual Installation
+#### Manual Installation
 Required software:
 
 | Software | Min. Version   |
@@ -111,7 +111,7 @@ To install Docker Community Edition (CE), you can refer to the official document
 To initialize a Kubernetes cluster via kubeadm, you can refer to the official guide: https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/ 
 
 
-##### Kubernetes Network Plugin
+#### Kubernetes Network Plugin
 Kubernetes requires a third-party network plugin to communicate within the cluster. The deployment of Boxed has been tested with the *Flannel Overlay Network*.
 More information available here: https://kubernetes.io/docs/concepts/cluster-administration/networking/#flannel
 
@@ -123,7 +123,7 @@ Kubernetes provide the ability assign containers to nodes via `kubectl` (https:/
 ```kubectl label nodes <node-name> <label-key>=<label-value>```.
 
 
-##### Example for assigning a container to a node
+#### Example for assigning a container to a node
 
 The yaml file describing our test application must include the specification:
 ```
@@ -142,7 +142,7 @@ testcluster.cern.ch            Ready     <none>    1d       v1.8.0    beta.kuber
 ```
 
 
-##### Container assignments required for the deployment of Boxed
+#### Container assignments required for the deployment of Boxed
 To deploy Boxed, the following assigments between containers and nodes are required:
 
 | Container Name | Label Key | Label Value    | Special Requirements       | Notes |
