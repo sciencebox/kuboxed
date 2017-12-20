@@ -119,7 +119,7 @@ More information available here: https://kubernetes.io/docs/concepts/cluster-adm
 ### 2. Assign containers to cluster nodes
 To comply with the persistent storage and network configuration requirements, a univocal assignment between some cluster nodes and the containers they run must be put in place.
 
-Kubernetes provide the ability assign containers to nodes via `kubectl` (https://kubernetes.io/docs/concepts/configuration/assign-pod-node/). To label one node, it is sufficient to issue the command:
+Kubernetes provides the ability assign containers to nodes via `kubectl` (https://kubernetes.io/docs/concepts/configuration/assign-pod-node/). To label one node, it is sufficient to issue the command:
 ```kubectl label nodes <node-name> <label-key>=<label-value>```.
 
 
@@ -143,11 +143,14 @@ testcluster.cern.ch            Ready     <none>    1d       v1.8.0    beta.kuber
 
 
 #### Container assignments required for the deployment of Boxed
-To deploy Boxed, the following assigments between containers and nodes are required:
+The provided yaml files for deployment require several container assignments to cluster nodes.
+Even though this can be modified, we recommend following the suggested configuration. Other deployment scenarios have not been tested and might lead to an inconsistent state of services. In case the predefined assignment of containers to nodes cannot be put in place, it is mandatory to satisfy the provisioning of Persistent Volumes and access to Host Network.
+
+Required assignments of containers to nodes:
 
 | Container Name | Label Key | Label Value    | Special Requirements       | Notes |
 | --------       | --------- | -------------- | -------------------------- | ----- |
-| ldap           | nodeApp   | ldap           | Persistent Storage         | 4
+| ldap           | nodeApp   | ldap           | Persistent Storage         |
 | eos-mgm        | nodeApp   | eos-mgm        | Memory, Persistent Storage | 1
 | eos-fst*N*     | nodeApp   | eos-fst*N*     | Persistent Storage         | 1, 2
 | cernbox        | nodeApp   | cernbox        | Persistent Storage         | 3
@@ -160,11 +163,30 @@ To deploy Boxed, the following assigments between containers and nodes are requi
 
 *Note 2*: It is recommended to run ONLY one FST on a cluster node to avoid the risk of losing or being unable to access users' data due to node failures. FST containers are "cheap" and can run on small-sized Virtual Machines.
 
-*Note 3*: CERNBox and CERNBox MySQL require Persistent Storage to store sharing information and CERNBox app configuration.
-
-*Note 4*: A local LDAP server is required to provide user information and unix account to services. LDAP uses Persistent Storage to save user information.
+*Note 3*: CERNBox and CERNBox MySQL require Persistent Storage to store sharing information and CERNBox Applications configuration.
 
 
+### 3. Prepare Persistent Storage
+The provisioning of persistent storage is a required step for several containers deployed with Boxed. 
+To avoid relying on externally-provided storage (e.g., Google Compute Engine PersistentDisk, Amazon Web Services ElasticBlockStore, Network File System, etc.) that might reduce the deployment scope of Boxed, we limit ourselves to mount a *hostPath* in the running containers. Via *hostPath* it is possible to mount any folder or partition available on the node in the container. Remind that *hostPath* is local storage and cannot be automatically relocated together with the container by Kubernetes.
+
+When deploying Boxed on Virtual Machines (e.g., in a private OpenStack Cloud) it is strongly recommended to attach storage volumes (e.g., a Cinder Volume in OpenStack) to the node and use such volume in the container. This would allow relocating the storage together with the container in case of node failure. This operation is expected to be performed manually by the system administrator as Kubernetes has no knowledge of attached volumes per se.
+Please, read more in the section "How to Fail Over a Node with Persistent Storage Attached".
+
+
+Required Persistent Storage - **CRITICAL** :
+
+| Container Name | Usage | Host Path* | Container Path* | Cinder Volume Mount Point* | FS | Size** | Notes |
+| --------       | ----- | --------- | -------------- | ------------------------- | ----------- | ---- | ----- | 
+| ldap           | user database | /mnt/ldap/userdb | /var/lib/ldap | /mnt/ldap/ | ext4 | ~MB |
+| ldap           | ldap configuration | /mnt/ldap/config | /etc/ldap/slapd.d | /mnt/ldap/ | ext4 | ~MB |
+| eos-mgm        | namespace | /mnt/mgm\_namespace/eos\_namespace **TO BE CHECKED ** | /var/eos | /mnt/mgm\_namepsace | ?? | ?? |
+| eos-fst*N*     | user data | /mnt/fst\_userdata | /mnt/fst\_userdata | /mnt/fst\_userdata | xfs | ~TB/PB | Scalable
+| cernbox        | config + user shares (SQLite) | /mnt/cbox\_shares\_db/cbox\_data | /var/www/html/cernbox/data | /mnt/cbox\_shares\_db | ext4 | ~MB |
+| cernboxmysql   | config + user shares (MySQL) | /mnt/cbox_shares_db/cbox_MySQL | /var/lib/mysql | /mnt/cbox\_shares\_db | ext4 | ~GB |
+| swan           | user status database | /mnt/jupyterhub\_data ** FIX DirectoryOrCreate --should be Directory--** | /srv/jupyterhub/jupyterhub_data | /mnt/jupyterhub\_data | ext4 | ~MB |
+*Note \**: Whlie host paths and mount points can be modified according to site-specific requirements, never modify the container path.
+*Note \*\**: The size reported here is the order of magnitude. Actual size depends on system usage, storage requirements, and user pool size.
 
 
 
@@ -176,3 +198,25 @@ To deploy Boxed, the following assigments between containers and nodes are requi
 -----
 
 ## Deployment of Services
+
+
+
+
+
+-----
+
+## The Network Perspective
+
+
+
+
+-----
+
+## The Storage Perspective
+
+
+
+### How to Fail Over a Node with Persistent Storage Attached
+
+
+
