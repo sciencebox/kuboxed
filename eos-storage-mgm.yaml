@@ -73,8 +73,8 @@ spec:
   volumes:
   - name: *vm_namespace
     hostPath:
-      path: /mnt/mgm_namespace/eos_namespace    # Cannot set permission properly on the mount point itself
-      type: DirectoryOrCreate
+      path: /mnt/eos_namespace
+      type: Directory
   - name: *vm_logs
     hostPath:
       path: /var/kubeVolumes/mgm_logs
