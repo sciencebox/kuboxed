@@ -170,28 +170,43 @@ Required assignments of containers to nodes:
 The provisioning of persistent storage is a required step for several containers deployed with Boxed. 
 To avoid relying on externally-provided storage (e.g., Google Compute Engine PersistentDisk, Amazon Web Services ElasticBlockStore, Network File System, etc.) that might reduce the deployment scope of Boxed, we limit ourselves to mount a *hostPath* in the running containers. Via *hostPath* it is possible to mount any folder or partition available on the node in the container. Remind that *hostPath* is local storage and cannot be automatically relocated together with the container by Kubernetes.
 
-When deploying Boxed on Virtual Machines (e.g., in a private OpenStack Cloud) it is strongly recommended to attach storage volumes (e.g., a Cinder Volume in OpenStack) to the node and use such volume in the container. This would allow relocating the storage together with the container in case of node failure. This operation is expected to be performed manually by the system administrator as Kubernetes has no knowledge of attached volumes per se.
+When deploying Boxed on Virtual Machines (e.g., in a private OpenStack Cloud) it is strongly recommended to attach storage volumes (e.g., a Cinder Volume in OpenStack) to the node and use such volumes in the container. This would allow relocating the storage together with the container in case of node failure. This operation is expected to be performed manually by the system administrator as Kubernetes has no knowledge of attached volumes per se.
 Please, read more in the section "How to Fail Over a Node with Persistent Storage Attached".
+
+As a rule of thumb, critical storage (e.g., user account information, user data, sharing database, etc.) should be delivered to attached storage volumes (e.g., Cinder Volumes in OpenStack) and is below identified by a host path in `/mnt/<name-of-the-volume>/<subfolders>`. Less critical persistent storage is instead required for systems logs, which are typically stored on the cluster node itself in the host path `/var/kubeVolumes/<subfolders>`.
 
 
 Required Persistent Storage - **CRITICAL** :
 
-| Container Name | Usage | Host Path* | Container Path* | Cinder Volume Mount Point* | FS | Size** | Notes |
-| --------       | ----- | --------- | -------------- | ------------------------- | ----------- | ---- | ----- | 
-| ldap           | user database | /mnt/ldap/userdb | /var/lib/ldap | /mnt/ldap/ | ext4 | ~MB |
-| ldap           | ldap configuration | /mnt/ldap/config | /etc/ldap/slapd.d | /mnt/ldap/ | ext4 | ~MB |
-| eos-mgm        | namespace | /mnt/mgm\_namespace/eos\_namespace **TO BE CHECKED ** | /var/eos | /mnt/mgm\_namepsace | ?? | ?? |
-| eos-fst*N*     | user data | /mnt/fst\_userdata | /mnt/fst\_userdata | /mnt/fst\_userdata | xfs | ~TB/PB | Scalable
-| cernbox        | config + user shares (SQLite) | /mnt/cbox\_shares\_db/cbox\_data | /var/www/html/cernbox/data | /mnt/cbox\_shares\_db | ext4 | ~MB |
-| cernboxmysql   | config + user shares (MySQL) | /mnt/cbox_shares_db/cbox_MySQL | /var/lib/mysql | /mnt/cbox\_shares\_db | ext4 | ~GB |
-| swan           | user status database | /mnt/jupyterhub\_data ** FIX DirectoryOrCreate --should be Directory--** | /srv/jupyterhub/jupyterhub_data | /mnt/jupyterhub\_data | ext4 | ~MB |
+| Container Name | Usage                         | Host Path*                       | Container Path*                 | Cinder Volume Mount Point* | FS   | Size** | Notes |
+| --------       | ----------------------------- | -------------------------------- | ------------------------------- | -------------------------- | ---- | ------ | ----- | 
+| ldap           | user database                 | /mnt/ldap/userdb                 | /var/lib/ldap                   | /mnt/ldap/                 | ext4 | ~MB    |
+| ldap           | ldap configuration            | /mnt/ldap/config                 | /etc/ldap/slapd.d               | /mnt/ldap/                 | ext4 | ~MB    |
+| eos-mgm        | namespace                     | /mnt/eos\_namespace              | /var/eos                        | /mnt/mgm\_namepsace        | ext4 | ~GB    |
+| eos-fst*N*     | user data                     | /mnt/fst\_userdata               | /mnt/fst\_userdata              | /mnt/fst\_userdata         | xfs  | ~TB/PB | Scalable
+| cernbox        | config + user shares (SQLite) | /mnt/cbox\_shares\_db/cbox\_data | /var/www/html/cernbox/data      | /mnt/cbox\_shares\_db      | ext4 | ~MB    |
+| cernboxmysql   | config + user shares (MySQL)  | /mnt/cbox_shares_db/cbox_MySQL   | /var/lib/mysql                  | /mnt/cbox\_shares\_db      | ext4 | ~MB    |
+| swan           | user status database          | /mnt/jupyterhub\_data            | /srv/jupyterhub/jupyterhub_data | /mnt/jupyterhub\_data      | ext4 | ~MB    |
 *Note \**: Whlie host paths and mount points can be modified according to site-specific requirements, never modify the container path.
-*Note \*\**: The size reported here is the order of magnitude. Actual size depends on system usage, storage requirements, and user pool size.
+*Note \*\**: The size reported is the order of magnitude. Actual size depends on system usage, storage requirements, and user pool size.
 
 
+Required Persistent Storage - System Logs :
 
-
-
+| Container Name | Usage                         | Host Path*                       | Container Path*                 | Cinder Volume Mount Point* | FS   | Size** | Notes |
+| --------       | ----------------------------- | -------------------------------- | ------------------------------- | -------------------------- | ---- | ------ | ----- | 
+| eos-mgm        | MGM logs                      | /var/kubeVolumes/mgm_logs        | /var/log/eos                    | --                         | --   | ~GB    |
+| eos-mgm        | MQ logs (if colocated w/ MGM) | /var/kubeVolumes/mgm_logs        | /var/log/eos                    | --                         | --   | ~GB    |
+| eos-mq         | MQ logs                       | /var/kubeVolumes/mq_logs         | /var/log/eos                    | --                         | --   | ~GB    |
+| eos-fst*N*     | FST logs                      | /var/kubeVolumes/fst_logs        | /var/log/eos                    | --                         | --   | ~GB    |
+| cernbox        | cernbox logs                  | /mnt/cbox\_shares\_db/cbox\_data | /var/www/html/cernbox/data      | /mnt/cbox\_shares\_db      | ext4 | ~MB    | Colocated with shares db
+| cernbox        | httpd logs                    | /var/kubeVolumes/httpd_logs      | /var/log/httpd                  | --                         | --   | ~GB    |
+| cernbox        | shibboleth logs               | /var/kubeVolumes/shibboleth_logs | /var/log/shibboleth             | --                         | --   | ~GB    |
+| cernboxgateway | nginx logs                    | /var/kubeVolumes/cboxgateway_logs| /var/log/nginx                  | --                         | --   | ~GB    |
+| swan           | JupyterHub logs               | /var/kubeVolumes/jupyterhub_logs | /var/log/jupyterhub             | --                         | --   | ~GB    |
+| swan           | httpd logs                    | /var/kubeVolumes/httpd_logs      | /var/log/httpd                  | --                         | --   | ~GB    |
+| swan           | shibboleth logs               | /var/kubeVolumes/shibboleth_logs | /var/log/shibboleth             | --                         | --   | ~GB    |
+| swan-daemons   | eos-fuse logs                 | /var/kubeVolumes/eosfuse_logs    | /var/log/eos/fuse               | --                         | --   | ~GB    |
 
 
 
@@ -199,7 +214,7 @@ Required Persistent Storage - **CRITICAL** :
 
 ## Deployment of Services
 
-
+    WIP
 
 
 
@@ -207,16 +222,17 @@ Required Persistent Storage - **CRITICAL** :
 
 ## The Network Perspective
 
-
+    WIP
 
 
 -----
 
 ## The Storage Perspective
 
+    WIP
 
 
 ### How to Fail Over a Node with Persistent Storage Attached
 
-
+    WIP
 
