@@ -187,7 +187,9 @@ Required Persistent Storage - **CRITICAL** :
 | cernbox        | config + user shares (SQLite) | /mnt/cbox\_shares\_db/cbox\_data | /var/www/html/cernbox/data      | /mnt/cbox\_shares\_db      | ext4 | ~MB    |
 | cernboxmysql   | config + user shares (MySQL)  | /mnt/cbox_shares_db/cbox_MySQL   | /var/lib/mysql                  | /mnt/cbox\_shares\_db      | ext4 | ~MB    |
 | swan           | user status database          | /mnt/jupyterhub\_data            | /srv/jupyterhub/jupyterhub_data | /mnt/jupyterhub\_data      | ext4 | ~MB    |
+
 *Note \**: Whlie host paths and mount points can be modified according to site-specific requirements, never modify the container path.
+
 *Note \*\**: The size reported is the order of magnitude. Actual size depends on system usage, storage requirements, and user pool size.
 
 
