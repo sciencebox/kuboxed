@@ -58,7 +58,7 @@ spec:
   volumes:
   - name: *vm_logs
     hostPath:
-      path: /var/kubeVolumes/mq_log
+      path: /var/kubeVolumes/mq_logs
       type: DirectoryOrCreate
 ---
 ### SERVICE ###
