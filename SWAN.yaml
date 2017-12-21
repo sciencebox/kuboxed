@@ -109,7 +109,7 @@ spec:
       - name: *vm_JHconfig
         hostPath:
           path: /mnt/jupyterhub_data
-          type: DirectoryOrCreate
+          type: Directory
       - name: *vm_logs-jupyterhub
         hostPath:
           path: /var/kubeVolumes/jupyterhub_logs
