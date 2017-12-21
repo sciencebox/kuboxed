@@ -176,7 +176,7 @@ Please, read more in the section "How to Fail Over a Node with Persistent Storag
 As a rule of thumb, critical storage (e.g., user account information, user data, sharing database, etc.) should be delivered to attached storage volumes (e.g., Cinder Volumes in OpenStack) and is below identified by a host path in `/mnt/<name-of-the-volume>/<subfolders>`. Less critical persistent storage is instead required for systems logs, which are typically stored on the cluster node itself in the host path `/var/kubeVolumes/<subfolders>`.
 
 
-Required Persistent Storage - **CRITICAL** :
+#### Required Persistent Storage - **CRITICAL** :
 
 | Container Name | Usage                         | Host Path*                       | Container Path*                 | Cinder Volume Mount Point* | FS   | Size** | Notes |
 | --------       | ----------------------------- | -------------------------------- | ------------------------------- | -------------------------- | ---- | ------ | ----- | 
@@ -193,7 +193,7 @@ Required Persistent Storage - **CRITICAL** :
 *Note \*\**: The size reported is the order of magnitude. Actual size depends on system usage, storage requirements, and user pool size.
 
 
-Required Persistent Storage - System Logs :
+#### Required Persistent Storage - System Logs :
 
 | Container Name | Usage                         | Host Path*                       | Container Path*                 | Cinder Volume Mount Point* | FS   | Size** | Notes |
 | --------       | ----------------------------- | -------------------------------- | ------------------------------- | -------------------------- | ---- | ------ | ----- | 
