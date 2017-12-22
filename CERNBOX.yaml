@@ -318,6 +318,16 @@ spec:
           value: "ldap.boxed.svc.cluster.local"
         - name: WEBDAV_CLIENT_CERT_PORT
           value: "4443"
+        - name: EOS_GATEWAY_SELF_REGISTRATION
+          value: "true"
+        - name: EOS_GATEWAY_AUTH
+          value: "https"
+        - name: EOS_MGM_ENDPOINT    # Same as EOS_MGM_ALIAS
+          value: "eos-mgm.boxed.svc.cluster.local"
+        lifecycle:
+          preStop:
+            exec:
+              command: ["bash", "/root/stop.sh"]
       volumes:
       - name: *vm_certs
         secret:
