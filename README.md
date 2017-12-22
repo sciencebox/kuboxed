@@ -394,8 +394,22 @@ Also, it is possible to configure some of the service internals via environment 
 
 
 
-
 ### 4. Deployment of SWAN
+
+The SWAN service, composed of JupyterHub ("swan"), the EOS fuse client ("eos-fuse"), and the CVMFS client ("cvmfs"), can be deployed by simply creating the resources described in `SWAN.yaml`.
+The JupyterHub container is a resource of type Deployment, while the EOS fuse client and the CVMFS client are resources of type DaemonSet.
+
+Before proceeding with the deployment, please remind that:
+
+- The SWAN service requires at least one worker node where to run single-user's session. This node should be labeled as "nodeApp=swan-users". Adding more worker nodes provides the ability to scale out the capacity of the service according to the number of concurrent sessions it has to sustain. The EOS fuse client and the CVMFS client will be automatically deployed on all the nodes labeled as "nodeApp=swan-users";
+- The container responsible for spawning, managing, and proxying multiple Jupyter sessions ("jupyterhub") will be downloaded and executed on the node labeled with `nodeApp=swan`, requires access to the hostNetwork of the node, and the container path `/srv/jupyterhub/jupyterhub_data` must be stored on persistent media.
+
+It is possible to configure some of the service internals via environment variables in `SWAN.yaml`:
+
+1. For "swan", `CONTAINER_IMAGE` can be used to specify the base image for single-user's sessions;
+2. For "swan", `NODE_SELECTOR_KEY` and `NODE_SELECTOR_VALUE` should match "nodeApp" and "swan-users", respectively, so that JupyterHubs knows on which nodes single-user's sessions must be spawned. In case the label of SWAN worker nodes is modified, these two envvars must be updated consistently.
+3. For "swan", `HTTP_PORT` specifies the listening port for HTTP traffic. Same for `HTTPS_PORT` and HTTPS traffic. The default setting is port 80 and 443, respectively.
+
 
 
 
