@@ -240,7 +240,7 @@ To deploy the service, from a high-level perspective, it is sufficient to create
 It is recommended to follow the detailed instructions below, which contain also results of commands from a working deployment useful for sanity check.
 
 
-#### Initialization of the namespace and deployment of LDAP server
+### 1. Initialization of the namespace and deployment of LDAP server
 Create the resources described in `BOXED.yaml`:
 ```
 kubectl create -f BOXED.yaml
@@ -257,12 +257,12 @@ and requires access to persistent storage at `/mnt/ldap`.
 Also, a Kubernetes service names `ldap` will be created to access the server from other containers of the cluster at `ldap.boxed.svc.cluster.local`.
 
 
-#### Deployment of EOS
+### 2. Deployment of EOS
 
-##### 1. EOS Management Server (MGM)
+#### a. EOS Management Server (MGM)
 Create the EOS Management Server (MGM) via the file `eos-storage-mgm.yaml`. This will result in having the mgm container running and a Kubernetes service to access it at `eos-mgm.boxed.svc.cluster.local`. Remind the MGM container requires enough memory to store the namespace (actual requirements depend on the number of files and folders stored on EOS). The container folder `/var/eos` must be stored on persistent media -- It stores the namespace information.
 
-##### 2. EOS File Storage Server (FST)
+#### b. EOS File Storage Server (FST)
 Create mutiple EOS File Storage Server (FST) (*Note: At least two are required!*) via the provided script `eos-storage-fst.sh`. This script will create yaml descriptors to deploy the FSTs. For example:
 ```
 bash eos-storage-fst.sh
@@ -274,7 +274,7 @@ will create the file `eos-storage-fst1.yaml`, allowing for the deployment of the
 The yaml file for FSTs also specifies a Kubernetes service, making the FST reachable at `eos-fst1.boxed.svc.cluster.local`.
 The container folder `/mnt/fst_userdata` must be stored on persistent media -- It stored user data.
 
-##### 3. Finalize and verify deployment
+#### c. Finalize and verify deployment
 Verify the container status via `kubectl`:
 ```
 kubectl -n boxed get pods -o wide
