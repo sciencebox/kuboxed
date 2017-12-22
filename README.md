@@ -258,21 +258,33 @@ Also, a Kubernetes service names `ldap` will be created to access the server fro
 
 
 ### 2. Deployment of EOS
+*Note:* The deployment of EOS in Kubernetes will be re-implemented using StatefulSets (https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/).
+For the time being, EOS is deployed via simple Pods and requires several manual steps to be performed by the system administrator.
+
 
 #### a. EOS Management Server (MGM)
 Create the EOS Management Server (MGM) via the file `eos-storage-mgm.yaml`. This will result in having the mgm container running and a Kubernetes service to access it at `eos-mgm.boxed.svc.cluster.local`. Remind the MGM container requires enough memory to store the namespace (actual requirements depend on the number of files and folders stored on EOS). The container folder `/var/eos` must be stored on persistent media -- It stores the namespace information.
 
+
 #### b. EOS File Storage Server (FST)
-Create mutiple EOS File Storage Server (FST) (*Note: At least two are required!*) via the provided script `eos-storage-fst.sh`. This script will create yaml descriptors to deploy the FSTs. For example:
+Create multiple EOS File Storage Server (FST) -- **Note: At least two are required!** -- via the provided script `eos-storage-fst.sh`. This script will create yaml descriptors to deploy the FSTs. 
+Usage:
 ```
 bash eos-storage-fst.sh
 Syntax:  eos-storage-fst.sh <fst_number> <eos_mgm_alias> <eos_mq_alias>
+```
 
+For example:
+```
 bash eos-storage-fst.sh 1 eos-mgm.boxed.svc.cluster.local eos-mgm.boxed.svc.cluster.local
 ```
 will create the file `eos-storage-fst1.yaml`, allowing for the deployment of the first FST.
-The yaml file for FSTs also specifies a Kubernetes service, making the FST reachable at `eos-fst1.boxed.svc.cluster.local`.
-The container folder `/mnt/fst_userdata` must be stored on persistent media -- It stored user data.
+Additional FSTs can be created using the procedure with an increasing <fst_number> as parameter.
+Adding FSTs to the EOS cluster allows to scale out the storage demands by attaching more and more volumes to the mass end storage service.
+
+The yaml file for FSTs also specifies a Kubernetes service, resulting in the ability to reach the FST server, e.g., at `eos-fst1.boxed.svc.cluster.local`.
+The container folder `/mnt/fst_userdata` must be stored on persistent media -- It stores user data.
+
 
 #### c. Finalize and verify deployment
 Verify the container status via `kubectl`:
@@ -351,6 +363,15 @@ After this command has returned, verify the file system status with `eos fs ls`:
 ```
 
 After few seconds, the *boot* column should report `booted` and the *configstatus* one should report `rw`
+
+
+### 3. Deployment of CERNBox
+
+
+
+
+### 4. Deployment of SWAN
+
 
 
 
