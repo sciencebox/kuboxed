@@ -263,7 +263,10 @@ For the time being, EOS is deployed via simple Pods and requires several manual 
 
 
 #### a. EOS Management Server (MGM)
-Create the EOS Management Server (MGM) via the file `eos-storage-mgm.yaml`. This will result in having the mgm container running and a Kubernetes service to access it at `eos-mgm.boxed.svc.cluster.local`. Remind the MGM container requires enough memory to store the namespace (actual requirements depend on the number of files and folders stored on EOS). The container folder `/var/eos` must be stored on persistent media -- It stores the namespace information.
+Create the EOS Management Server (MGM) via the file `eos-storage-mgm.yaml`. 
+The EOS-MGM container will be downloaded and run on a node labeled with `nodeApp=eos-mgm`.
+Also, a heaedless Kubernetes service will grant access to it at `eos-mgm.boxed.svc.cluster.local`. 
+Remind the MGM container requires enough memory to store the namespace (actual requirements depend on the number of files and folders stored on EOS) and that the container folder `/var/eos` must be stored on persistent media -- It stores the namespace information.
 
 
 #### b. EOS File Storage Server (FST)
@@ -282,7 +285,8 @@ will create the file `eos-storage-fst1.yaml`, allowing for the deployment of the
 Additional FSTs can be created using the procedure with an increasing <fst_number> as parameter.
 Adding FSTs to the EOS cluster allows to scale out the storage demands by attaching more and more volumes to the mass end storage service.
 
-The yaml file for FSTs also specifies a Kubernetes service, resulting in the ability to reach the FST server, e.g., at `eos-fst1.boxed.svc.cluster.local`.
+The yaml file for FSTs specifies a headless Kubernetes service, resulting in the ability to reach the FST server, e.g., at `eos-fst1.boxed.svc.cluster.local`.
+The EOS-FST*N* container will run on a node labeled with `nodeApp=eos-fst*N*`.
 The container folder `/mnt/fst_userdata` must be stored on persistent media -- It stores user data.
 
 
@@ -366,6 +370,27 @@ After few seconds, the *boot* column should report `booted` and the *configstatu
 
 
 ### 3. Deployment of CERNBox
+
+The CERNBox service, composed of the Web interface ("cernbox"), the gateway ("cernboxgateway"), and the database backend ("cernboxmysql"), can be deployed by simply creating the resources described in `CERNBOX.yaml`. The three containers are deployed via resources of type Deployment.
+
+Before proceeding with the deployment, please remind that:
+
+- The container responsible for the Web interface ("cernbox") will be downloaded and executed on the node labeled with `nodeApp=cernbox` and the container path `/var/www/html/cernbox/data` must be stored on persistent media;
+- In case of deployment with MySQL database backend, the MySQL container ("cernboxmysql") will run on the same node of "cernbox", i.e., the node with label `nodeApp=cernbox`. Container path `/var/lib/mysql` must be stored on persistent media;
+- The container running the gateway process ("cernboxgateway") will be downloaded and executed on the node labeled with `nodeApp=cernbox-gateway` and requires access to the hostNetwork of the node.
+
+
+Few configuration steps are site-specific and required modification to the `CERNBOX.yaml` file:
+
+1. In the environment variable section for Deployment "cernbox", the envvar `CERNBOXGATEWAY_HOSTNAME` must have a value matching the Fully Qualified Domain Name of the node where the "cernboxgateway" container will execute. Please, adjust it accordingly to your DNS configuration.
+2. In the environment variable section for Deployment "cernboxgateway", the envvar `SWAN_BACKEND` must have a value matching the Fully Qualified Domain Name of the node where the "swan" container will execute (read more in "Deployment of SWAN" section). Please, adjust it accordingly to your DNS configuration. Similarly `SWAN_BACKEND_PORT` must be equal to the listening port of the JupyterHub service offered by the "swan" container. The default setting is 443.
+
+
+Also, it is possible to configure some of the service internals via environment variable switches:
+
+1. For "cernbox", the envvar `AUTH_TYPE` can be set to "local" for login via LDAP credentials or to "shibboleth" for login via Single Sign-On and similar technologies. The provided configuration for shibboleth is compatible with CERN SSO and will require modifications to make it work with your SSO solution.
+2. For "cernbox", the envvar `DATABASE_BACKEND` can be set to "SQLite" in order to use an SQLite backend integrated into the "cernbox" container or to "MySQL" to use the external container "cernboxmysql". The latter configuration is suggested for production-like deployments.
+3. For "cernboxgateway", the envvar `HTTP_PORT` specifies the listening port for HTTP traffic. Same for `HTTPS_PORT` and HTTPS traffic. The default setting is port 80 and 443, respectively.
 
 
 
