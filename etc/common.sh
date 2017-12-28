@@ -23,6 +23,13 @@ OS_RELEASE="/etc/os-release"
 
 # ----- Functions ----- #
 
+# Disable SELinux if needed
+disable_selinux ()
+{
+    test $(getenforce) == "Disabled" || setenforce 0
+}
+
+
 # Check to be root
 need_root ()
 {
@@ -178,7 +185,7 @@ install_docker()
       device-mapper-persistent-data \
       lvm2
     yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    setenforce 0
+    disable_selinux
     # See dependency issue: https://github.com/moby/moby/issues/33930
     yum install -y --setopt=obsoletes=0 \
       docker-ce${DOCKER_VERSION} \
@@ -216,7 +223,7 @@ gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
 	https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
 
-    setenforce 0
+    disable_selinux
     yum install -y \
       kubelet${KUBE_VERSION} \
       kubeadm${KUBE_VERSION} \
