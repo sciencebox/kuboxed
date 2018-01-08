@@ -27,6 +27,10 @@ In what follows, a short description of the containers required for each service
   3. CVMFS Client: The CVMFS client to access scientific software libraries and packages from the WLCG grid.
 
 
+#### LDAP
+As satellite service, a local LDAP server is required by EOS, CERNBox, and SWAN to fetch user's information.
+
+
 -----
 
 ## Deployment Guidelines and Requirements
@@ -37,12 +41,13 @@ In addition, Boxed in Kubernetes enables the system administrator to scale out s
 The minimal requirements for deploying Boxed in a Kubernetes cluster are as follows.
 
 #### 1. Number of cluster nodes
-The minimum amount of nodes is 2, but it is strongly recommended to run the services on 7 or more nodes to isolate system components and avoid single points of failure. The Kubernetes master node is not part of the count.
+It is strongly recommended to run the services on 8 (or more) nodes to isolate system components and avoid single points of failure. The Kubernetes master node is not part of the count.
 
 The provided yaml files for deployment make use of:
 
+  * 1 node for LDAP -- 1 for the local LDAP database to store user's information;
   * 1 + N nodes for EOS -- 1 for the Management Server (MGM) and N for N independent File Storage Servers (FST);
-  * 2 nodes for CERNBox -- 1 for the CERNBox Backend (Web interface and MySQL database) and 1 for the CERNBox Gateway;
+  * 2 nodes for CERNBox -- 1 for the CERNBox Backend (core ownCloud, Web interface, and MySQL database) and 1 for the CERNBox Gateway (nginx reverse proxy sorting different traffic types);
   * 2 nodes for SWAN -- 1 for JupyterHub and 1 playing the role of worker where single-user's sessions are spawned. The worker node executes the containers with the EOS Fuse Client and the CVMFS client.
 
 
