@@ -391,18 +391,19 @@ Before proceeding with the deployment, please remind that:
 Few configuration parameters are site-specific and require modifications to the `CERNBOX.yaml` file.
 Consider changing, in the environment variable section:
 
-1. In the environment variable section for Deployment "cernbox",
-2. For "cernbox", the envvar `CERNBOXGATEWAY_HOSTNAME` must have a value matching the Fully Qualified Domain Name of the node where the "cernboxgateway" container will execute. Please, adjust it accordingly to your DNS configuration.
-3. For "cernboxgateway", the envvar `SWAN_BACKEND` must have a value matching the Fully Qualified Domain Name of the node where the "swan" container will execute (read more in "Deployment of SWAN" section). Please, adjust it accordingly to your DNS configuration. 
+1. For "cernbox", the envvar `CERNBOXGATEWAY_HOSTNAME` must match the Fully Qualified Domain Name (FQDN) of the node where the "cernboxgateway" container will execute. Please, adjust it accordingly to your DNS configuration.
+2. For "cernboxgateway", the envvar `HOSTNAME` must match the FQDN of the node where the "cernboxgateway" container will execute. Please, adjust it accordingly to your DNS configuration.
+3. For "cernboxgateway", the envvar `SWAN_BACKEND` must have a value matching the FQDN of the node where the "swan" container will execute (read more in "Deployment of SWAN" section). Please, adjust it accordingly to your DNS configuration. 
 3b. Similarly, the envvar `SWAN_BACKEND_PORT` must be equal to the listening port of the JupyterHub service running in the "swan" container. The default setting is 443. If you modify the default settins, please adjust it consistently with your setup. 
 
 
 #### Service internals parameters
+
 It is possible to configure some of the service internals via environment variable switches:
 
 1. For "cernbox", the envvar `AUTH_TYPE` can be set to "local" for login via LDAP credentials or to "shibboleth" for login via Single Sign-On and similar technologies. The provided configuration for shibboleth is compatible with CERN SSO and will require modifications to make it work with your SSO solution.
 2. For "cernbox", the envvar `DATABASE_BACKEND` can be set to "SQLite" (so to use the SQLite backend integrated into the "cernbox" container) or to "MySQL" (so to use the external container "cernboxmysql"). The latter configuration is recommended for production-like deployments.
-3. For "cernboxgateway", the envvar `HTTP_PORT` specifies the listening port for HTTP traffic. Same for `HTTPS_PORT` and HTTPS traffic. The default settings are port 80 and 443, respectively.
+3. For "cernboxgateway", the envvar `HTTP_PORT` specifies the listening port for HTTP traffic. Same for `HTTPS_PORT` and HTTPS traffic. The default settings are ports 80 and 443, respectively.
 
 
 
@@ -416,11 +417,22 @@ Before proceeding with the deployment, please remind that:
 - The SWAN service requires at least one worker node where to run single-user's session. This node should be labeled as "nodeApp=swan-users". Adding more worker nodes provides the ability to scale out the capacity of the service according to the number of concurrent sessions it has to sustain. The EOS fuse client and the CVMFS client will be automatically deployed on all the nodes labeled as "nodeApp=swan-users";
 - The container responsible for spawning, managing, and proxying multiple Jupyter sessions ("jupyterhub") will be downloaded and executed on the node labeled with `nodeApp=swan`, requires access to the hostNetwork of the node, and the container path `/srv/jupyterhub/jupyterhub_data` must be stored on persistent media.
 
+
+#### Site-specific paramenters
+
+Few configuration parameters are site-specific and require modifications to the `SWAN.yaml` file.
+Consider changing, in the environment variable section:
+
+1. For "swan", the envvar `HOSTNAME` must match the FQDN of the node where the "jupyterhub" container will execute. Please, adjust it accordingly to your DNS configuration.
+
+
+#### Service internals parameters
+
 It is possible to configure some of the service internals via environment variables in `SWAN.yaml`:
 
-1. For "swan", `CONTAINER_IMAGE` can be used to specify the base image for single-user's sessions;
-2. For "swan", `NODE_SELECTOR_KEY` and `NODE_SELECTOR_VALUE` should match "nodeApp" and "swan-users", respectively, so that JupyterHubs knows on which nodes single-user's sessions must be spawned. In case the label of SWAN worker nodes is modified, these two envvars must be updated consistently.
-3. For "swan", `HTTP_PORT` specifies the listening port for HTTP traffic. Same for `HTTPS_PORT` and HTTPS traffic. The default setting is port 80 and 443, respectively.
+1. For "swan", the envvar `CONTAINER_IMAGE` can be used to specify the base image for single-user's sessions;
+2. For "swan", the envvars `NODE_SELECTOR_KEY` and `NODE_SELECTOR_VALUE` must match "nodeApp" and "swan-users", respectively. In case the label identifying SWAN worker nodes is modified, please update these two envvars consistently.
+3. For "swan", the envvar `HTTP_PORT` specifies the listening port for HTTP traffic. Same for `HTTPS_PORT` and HTTPS traffic. The default setting are ports 80 and 443, respectively.
 
 
 

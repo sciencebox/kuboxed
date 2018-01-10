@@ -292,10 +292,12 @@ spec:
           value: "CERNBOXGATEWAY"
         - name: DEPLOYMENT_TYPE
           value: "kubernetes"
-        - name: HOSTNAME            # Assume the gateway is exposed directly on the host where it runs
-          valueFrom:                # No Kubernetes services defined
-            fieldRef:               # Entrypoint will be: https://<nodeName>
-              fieldPath: spec.nodeName
+        #- name: HOSTNAME                    # Use this configuration only if the linux hostname matches the chosen domain name
+        #  valueFrom:                        # at the DNS (e.g., no aliases are defined)
+        #    fieldRef:                       # Otherwise, please specify manually the hostname below.
+        #      fieldPath: spec.nodeName
+        - name: HOSTNAME                    # Assume the gateway is exposed via hostNetwork on the node where it runs
+          value: "up2kube-cernbox.cern.ch"  # URL to reach CERNBox will be: https://<HOSTNAME>
         - name: HTTP_PORT
           value: "80"
         - name: HTTPS_PORT
