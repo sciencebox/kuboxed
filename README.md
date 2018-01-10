@@ -125,10 +125,11 @@ More information available here: https://kubernetes.io/docs/concepts/cluster-adm
 
 
 ### 2. Assign containers to cluster nodes
-To comply with the persistent storage and network configuration requirements, a univocal assignment between some cluster nodes and the containers they run must be put in place.
+To comply with the persistent storage and network configuration requirements, a univocal assignment between cluster nodes and the containers they run must assured.
+Kubernetes provides the ability assign containers to nodes via `kubectl` (https://kubernetes.io/docs/concepts/configuration/assign-pod-node/). 
 
-Kubernetes provides the ability assign containers to nodes via `kubectl` (https://kubernetes.io/docs/concepts/configuration/assign-pod-node/). To label one node, it is sufficient to issue the command:
-```kubectl label nodes <node-name> <label-key>=<label-value>```.
+To label one node, it is sufficient to issue the command:
+```kubectl label node <node-name> <label-key>=<label-value>```.
 
 
 #### Example for assigning a container to a node
@@ -140,13 +141,13 @@ spec:
     nodeApp: TESTAPP
 ```
 
-To assign the test application container to the node `testcluster.cern.ch`, it is required to label the node consistently:
+To assign the test application container to the node `testnode.cern.ch`, it is required to label the node consistently:
 ```
-kubectl label node testcluster.cern.ch nodeApp=TESTAPP
+kubectl label node testnode.cern.ch nodeApp=TESTAPP
 
 kubectl get nodes --show-labels
-NAME                          STATUS    ROLES     AGE       VERSION   LABELS
-testcluster.cern.ch            Ready     <none>    1d       v1.8.0    beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=testcluster.cern.ch,nodeApp=TESTAPP
+NAME                        STATUS    ROLES     AGE       VERSION   LABELS
+testnode.cern.ch            Ready     <none>    1d       v1.8.0    beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=testnode.cern.ch,nodeApp=TESTAPP
 ```
 
 
