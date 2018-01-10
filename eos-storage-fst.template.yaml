@@ -7,7 +7,7 @@ metadata:
   labels:
     app: *name
 spec:
-  restartPolicy: Never
+  restartPolicy: Always
   hostname: *name
   subdomain: *name
   #hostNetwork: true
