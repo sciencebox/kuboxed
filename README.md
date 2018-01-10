@@ -386,17 +386,23 @@ Before proceeding with the deployment, please remind that:
 - The container running the gateway process ("cernboxgateway") will be downloaded and executed on the node labeled with `nodeApp=cernbox-gateway` and requires access to the hostNetwork of the node.
 
 
-Few configuration steps are site-specific and required modification to the `CERNBOX.yaml` file:
+#### Site-specific paramenters
 
-1. In the environment variable section for Deployment "cernbox", the envvar `CERNBOXGATEWAY_HOSTNAME` must have a value matching the Fully Qualified Domain Name of the node where the "cernboxgateway" container will execute. Please, adjust it accordingly to your DNS configuration.
-2. In the environment variable section for Deployment "cernboxgateway", the envvar `SWAN_BACKEND` must have a value matching the Fully Qualified Domain Name of the node where the "swan" container will execute (read more in "Deployment of SWAN" section). Please, adjust it accordingly to your DNS configuration. Similarly `SWAN_BACKEND_PORT` must be equal to the listening port of the JupyterHub service offered by the "swan" container. The default setting is 443.
+Few configuration parameters are site-specific and require modifications to the `CERNBOX.yaml` file.
+Consider changing, in the environment variable section:
+
+1. In the environment variable section for Deployment "cernbox",
+2. For "cernbox", the envvar `CERNBOXGATEWAY_HOSTNAME` must have a value matching the Fully Qualified Domain Name of the node where the "cernboxgateway" container will execute. Please, adjust it accordingly to your DNS configuration.
+3. For "cernboxgateway", the envvar `SWAN_BACKEND` must have a value matching the Fully Qualified Domain Name of the node where the "swan" container will execute (read more in "Deployment of SWAN" section). Please, adjust it accordingly to your DNS configuration. 
+3b. Similarly, the envvar `SWAN_BACKEND_PORT` must be equal to the listening port of the JupyterHub service running in the "swan" container. The default setting is 443. If you modify the default settins, please adjust it consistently with your setup. 
 
 
-Also, it is possible to configure some of the service internals via environment variable switches:
+#### Service internals parameters
+It is possible to configure some of the service internals via environment variable switches:
 
 1. For "cernbox", the envvar `AUTH_TYPE` can be set to "local" for login via LDAP credentials or to "shibboleth" for login via Single Sign-On and similar technologies. The provided configuration for shibboleth is compatible with CERN SSO and will require modifications to make it work with your SSO solution.
-2. For "cernbox", the envvar `DATABASE_BACKEND` can be set to "SQLite" in order to use an SQLite backend integrated into the "cernbox" container or to "MySQL" to use the external container "cernboxmysql". The latter configuration is suggested for production-like deployments.
-3. For "cernboxgateway", the envvar `HTTP_PORT` specifies the listening port for HTTP traffic. Same for `HTTPS_PORT` and HTTPS traffic. The default setting is port 80 and 443, respectively.
+2. For "cernbox", the envvar `DATABASE_BACKEND` can be set to "SQLite" (so to use the SQLite backend integrated into the "cernbox" container) or to "MySQL" (so to use the external container "cernboxmysql"). The latter configuration is recommended for production-like deployments.
+3. For "cernboxgateway", the envvar `HTTP_PORT` specifies the listening port for HTTP traffic. Same for `HTTPS_PORT` and HTTPS traffic. The default settings are port 80 and 443, respectively.
 
 
 
