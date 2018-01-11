@@ -110,9 +110,9 @@ Required software:
 | wget     | *not-relevant* |
 | git      | *not-relevant* |
 | Docker   | 17.03.2.ce     |
-| kubelet  | 1.8.0          |
-| kubeadm  | 1.8.0          |
-| kubectl  | 1.8.0          |
+| kubelet  | 1.9.0          |
+| kubeadm  | 1.9.0          |
+| kubectl  | 1.9.0          |
 
 To install Docker Community Edition (CE), you can refer to the official documentation: https://docs.docker.com/engine/installation/
 
