@@ -2,10 +2,10 @@
 The system consists of three service bubbles matching the provided services: EOS (orange), CERNBOX (blue), and SWAN (green).
 
 
-        Picture
+        Picture -- WIP
 
 
-Each of the three bubbles contains multiple Docker containers that are required to run in order to have the service up and available.
+Each of the three blocks contains multiple Docker containers that are required to run in order to have the services up and available.
 In what follows, a short description of the containers required for each service is provided.
 
 #### EOS
@@ -84,7 +84,7 @@ Why not using external aliases or cloud load balancers? Please, read the additio
 #### *Notes on External Capabilities for Network and Persistent Storage*
 
 To maximize the compatibility of Boxed with diverse public and private clouds, the provided yaml files for deployment do not take advantage of any externally-provided capability such as ingress controllers, external load balancers, persistent volumes, etc.
-Such capabilities are typically available on some IaaS clouds only (e.g., Google Compute Engine, Amazon Web Services) and relying on them could constitute a serious obstacle for the deployment of Boxed.
+Such capabilities are typically available on some IaaS clouds only (e.g., Google Compute Engine, Amazon Web Services) and relying on them would constitute an obstacle for the deployment of Boxed on other clouds.
 
 
 
@@ -246,6 +246,7 @@ To deploy the service, from a high-level perspective, it is sufficient to create
 It is recommended to follow the detailed instructions below, which contain also results of commands from a working deployment useful for sanity check.
 
 
+
 ### 1. Initialization of the namespace and deployment of LDAP server
 Create the resources described in `BOXED.yaml`:
 ```
@@ -258,9 +259,17 @@ To deploy the LDAP server, create the resources described in `LDAP.yaml` to star
 kubectl create -f LDAP.yaml
 ```
 The LDAP container will be downloaded and run on a node labeled with `nodeApp=ldap`. The container folders `/var/lib/ldap` and `/etc/ldap/slapd.d` must be stored on persistent media.
+Also, a Kubernetes service named `ldap` will be created to access the server from other containers of the cluster at `ldap.boxed.svc.cluster.local`.
 
-and requires access to persistent storage at `/mnt/ldap`.
-Also, a Kubernetes service names `ldap` will be created to access the server from other containers of the cluster at `ldap.boxed.svc.cluster.local`.
+Consider adding some demo users to the LDAP server when deploying Boxed for the first time.
+The script at `/root/addusers.sh` on the LDAP container will automatically create 10 users accounts and a special user account with administrator privileges.
+
+To access CERNBox and SWAN services, please use the following user information **(username:password)**:
+  * user0:test0
+  * user1:test1
+  * ...
+  * user9:test9
+
 
 
 ### 2. Deployment of EOS
@@ -373,6 +382,7 @@ After this command has returned, verify the file system status with `eos fs ls`:
 ```
 
 After few seconds, the *boot* column should report `booted` and the *configstatus* one should report `rw`
+
 
 
 ### 3. Deployment of CERNBox
