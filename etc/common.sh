@@ -239,7 +239,10 @@ EOF
 deb http://apt.kubernetes.io/ kubernetes-xenial main
 EOF
     apt-get update
-    apt-get install -y kubelet kubeadm
+    apt-get install -y \
+      kubelet${KUBE_VERSION} \
+      kubeadm${KUBE_VERSION} \
+      kubectl${KUBE_VERSION}
 
   else
     echo "Unknown OS. Cannot continue."
