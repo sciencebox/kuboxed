@@ -1,3 +1,11 @@
+### WARNING ###
+#
+# This file is deprecated!
+# To deploy CERNBox, please refer to CERNBOX.yaml
+#
+###
+
+
 ### POD ###
 apiVersion: v1
 kind: Pod
