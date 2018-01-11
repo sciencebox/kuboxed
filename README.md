@@ -428,12 +428,8 @@ Before proceeding with the deployment, please remind that:
 - The container responsible for spawning, managing, and proxying multiple Jupyter sessions ("jupyterhub") will be downloaded and executed on the node labeled with `nodeApp=swan`, requires access to the hostNetwork of the node, and the container path `/srv/jupyterhub/jupyterhub_data` must be stored on persistent media.
 
 Also, SWAN requires access to the Kubernetes cluster resources and the ability to list and start containers in the namespace where it is deployed.
-In order to achieve this, please review your cluster configuration and, if needed, configure the default service account for the namespace as an admin of the cluster.
-
-Example with namespace "boxed":
-```
-kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=boxed:default
-```
+The deployment procedure of SWAN automatically enables the the default service account for the namespace as an admin of the cluster.
+In case you want to put in place a different configuration, please comment out the "Cluster Roles" section in `SWAN.yaml`.
 
 
 #### Site-specific paramenters

@@ -6,6 +6,9 @@
 #  * EOS client for fuse-mounting user's home directory
 #  * CVMFS client to fetch scientific libraries on-demand
 #
+# Configures:
+#  * Service account "default" for namespace "boxed" as cluster administrator (please read the note below)
+#
 # NOTE: SWAN requires access to the Kubernetes cluster resources and the ability 
 #	to list and start containers in the namespace where it is deployed.
 #	In order to achieve this, please review your cluster configuration and, if needed, 
@@ -24,8 +27,24 @@
 ###
 
 
-### PODS ###
+### Cluster Roles ###
+# "default" service account for namespace "boxed" as cluster administrator
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: add-on-cluster-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: boxed
 
+
+### PODS ###
+---
 # Jupyterhub -- Deployment
 apiVersion: apps/v1beta1
 kind: Deployment
