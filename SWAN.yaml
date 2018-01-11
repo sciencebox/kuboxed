@@ -8,7 +8,7 @@
 #
 # NOTE: SWAN requires access to the Kubernetes cluster resources and the ability 
 #	to list and start containers in the namespace where it is deployed.
-#	In order to achieve this, please review your configuration and, if needed, 
+#	In order to achieve this, please review your cluster configuration and, if needed, 
 #	configure the default service account for the namespace as an admin of the cluster.
 #	
 #	Example with namespace "boxed":

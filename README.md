@@ -427,6 +427,14 @@ Before proceeding with the deployment, please remind that:
 - The SWAN service requires at least one worker node where to run single-user's session. This node should be labeled as "nodeApp=swan-users". Adding more worker nodes provides the ability to scale out the capacity of the service according to the number of concurrent sessions it has to sustain. The EOS fuse client and the CVMFS client will be automatically deployed on all the nodes labeled as "nodeApp=swan-users";
 - The container responsible for spawning, managing, and proxying multiple Jupyter sessions ("jupyterhub") will be downloaded and executed on the node labeled with `nodeApp=swan`, requires access to the hostNetwork of the node, and the container path `/srv/jupyterhub/jupyterhub_data` must be stored on persistent media.
 
+Also, SWAN requires access to the Kubernetes cluster resources and the ability to list and start containers in the namespace where it is deployed.
+In order to achieve this, please review your cluster configuration and, if needed, configure the default service account for the namespace as an admin of the cluster.
+
+Example with namespace "boxed":
+```
+kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=boxed:default
+```
+
 
 #### Site-specific paramenters
 
