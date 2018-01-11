@@ -1,11 +1,30 @@
 ### SWAN ###
+#
+# SWAN service
+# Deploys:
+#  * JupyterHub to spawn, manage, and proxy multiple Jupyter sessions for single users
+#  * EOS client for fuse-mounting user's home directory
+#  * CVMFS client to fetch scientific libraries on-demand
+#
+# NOTE: SWAN requires access to the Kubernetes cluster resources and the ability 
+#	to list and start containers in the namespace where it is deployed.
+#	In order to achieve this, please review your configuration and, if needed, 
+#	configure the default service account for the namespace as an admin of the cluster.
+#	
+#	Example with namespace "boxed":
+#       `kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=boxed:default`
+###
+
 
 ###
-# Deployment with KubeSpawner and an independent CVMFS clients on each worker node
-# I.e., nodes where single-user servers can be executed
+# Deployment with KubeSpawner and an independent CVMFS client on each worker node,
+# i.e., nodes where single-user servers can be executed
 #
 # The deployment with a cluster-level SQUID proxy should be preferred
 ###
+
+
+### PODS ###
 
 # Jupyterhub -- Deployment
 apiVersion: apps/v1beta1
@@ -131,7 +150,7 @@ spec:
 # Note: Deploy EOS Fuse and CVMFS daemons on all the nodes where
 #       single-user sessions can land. Such nodes are identified
 #       via NodeSelector key-value provided by Kubernetes.
-#       E.g., nodeApp: swan-users
+#       Default is: "nodeApp: swan-users"
 #
 apiVersion: extensions/v1beta1
 kind: DaemonSet
