@@ -1,5 +1,5 @@
 ## System Architecture
-The system consists of three service bubbles matching the provided services: EOS (orange), CERNBOX (blue), and SWAN (green).
+The system consists of three service blocks matching the provided services: EOS (red), CERNBOX (green), and SWAN (orange).
 
 ![System Architecture](https://raw.githubusercontent.com/cernbox/kuboxed/master/docs/architecture.png)
 
