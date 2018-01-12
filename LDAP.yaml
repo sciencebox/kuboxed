@@ -58,11 +58,11 @@ spec:
   - name: *vm_userdb
     hostPath:
       path: /mnt/ldap/userdb
-      type: DirectoryOrCreate
+      type: Directory
   - name: *vm_config
     hostPath:
       path: /mnt/ldap/config
-      type: DirectoryOrCreate
+      type: Directory
 ---
 ### SERVICE ###
 apiVersion: v1

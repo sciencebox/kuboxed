@@ -67,7 +67,7 @@ Persistent storage is provided by mounting a *hostPath* volume into the containe
 To make the container decoupled from the node, it is highly recommended to use external volumes (e.g., Cinder Volumes in OpenStack clusters), which can be detached and reattached to different nodes if required. More details are provided in Preparation section.
 
 Why not using *PersistentVolumeClaims*?
-Please, read the additional Notes on External Capabilities for Network and Persistent Storage.
+Please, refer to "Notes on External Capabilities for Network and Persistent Storage" for more information.
 
 
 #### 4. Network
@@ -78,7 +78,7 @@ Reachability on HTTP and HTTPS ports is achieved by using the *hostNetwork* on t
 
 No special requirements exist as far as the network speed is concerned. Just remind all the traffic from/to synchronization clients to the CERNBox service is handled by the CERNBox Gateway container.
 
-Why not using external aliases or cloud load balancers? Please, read the additional Notes on External Capabilities for Network and Persistent Storage.
+Why not using external aliases or cloud load balancers? Please, read "Notes on External Capabilities for Network and Persistent Storage" for more information.
 
 
 #### *Notes on External Capabilities for Network and Persistent Storage*
@@ -146,7 +146,7 @@ To assign the test application container to the node `testnode.cern.ch`, it is r
 kubectl label node testnode.cern.ch nodeApp=TESTAPP
 
 kubectl get nodes --show-labels
-NAME                        STATUS    ROLES     AGE       VERSION   LABELS
+NAME                        STATUS    ROLES     AGE      VERSION   LABELS
 testnode.cern.ch            Ready     <none>    1d       v1.8.0    beta.kubernetes.io/arch=amd64,beta.kubernetes.io/os=linux,kubernetes.io/hostname=testnode.cern.ch,nodeApp=TESTAPP
 ```
 
@@ -178,12 +178,12 @@ Required assignments of containers to nodes:
 
 ### 3. Prepare Persistent Storage
 The provisioning of persistent storage is a required step for several containers deployed with Boxed. 
-To avoid relying on externally-provided storage (e.g., Google Compute Engine PersistentDisk, Amazon Web Services ElasticBlockStore, Network File System, etc.) that might reduce the deployment scope of Boxed, we limit ourselves to mount a *hostPath* in the running containers. Via *hostPath* it is possible to mount any folder or partition available on the node in the container. Remind that *hostPath* is local storage and cannot be automatically relocated together with the container by Kubernetes.
+To avoid relying on externally-provided storage (e.g., Google Compute Engine PersistentDisk, Amazon Web Services ElasticBlockStore, Network File System, etc.), we limit ourselves to mount a *hostPath* in the running containers (see "Notes on External Capabilities for Network and Persistent Storage"). Via *hostPath* it is possible to mount any folder available on the node in the container. Remind that *hostPath* is local storage and cannot be automatically relocated together with the container by Kubernetes.
 
-When deploying Boxed on Virtual Machines (e.g., in a private OpenStack Cloud) it is strongly recommended to attach storage volumes (e.g., a Cinder Volume in OpenStack) to the node and use such volumes in the container. This would allow relocating the storage together with the container in case of node failure. This operation is expected to be performed manually by the system administrator as Kubernetes has no knowledge of attached volumes per se.
+When deploying Boxed on Virtual Machines (e.g., in a private OpenStack Cloud) it is strongly recommended to attach storage volumes (e.g., a Cinder Volume in OpenStack) to the node and use such volumes in the container. This would allow relocating the storage volume together with the container in case of node failure. This operation is expected to be performed manually by the system administrator as Kubernetes has no knowledge of attached volumes per se.
 Please, read more in the section "How to Fail Over a Node with Persistent Storage Attached".
 
-As a rule of thumb, critical storage (e.g., user account information, user data, sharing database, etc.) should be delivered to attached storage volumes (e.g., Cinder Volumes in OpenStack) and is below identified by a host path in `/mnt/<name-of-the-volume>/<subfolders>`. Less critical persistent storage is instead required for systems logs, which are typically stored on the cluster node itself in the host path `/var/kubeVolumes/<subfolders>`.
+As a rule of thumb, critical storage (e.g., user account information, user data, sharing database, etc.) should be stored on attached volumes (e.g., Cinder Volumes in OpenStack) and is below identified by a host path in `/mnt/<name-of-the-volume>/<subfolders>`. Less critical persistent storage is instead required for systems logs, which are typically stored on the cluster node itself in the host path `/var/kubeVolumes/<subfolders>`.
 
 
 #### Required Persistent Storage - **CRITICAL** :
@@ -192,15 +192,44 @@ As a rule of thumb, critical storage (e.g., user account information, user data,
 | --------       | ----------------------------- | -------------------------------- | ------------------------------- | -------------------------- | ---- | ------ | ----- | 
 | ldap           | user database                 | /mnt/ldap/userdb                 | /var/lib/ldap                   | /mnt/ldap/                 | ext4 | ~MB    |
 | ldap           | ldap configuration            | /mnt/ldap/config                 | /etc/ldap/slapd.d               | /mnt/ldap/                 | ext4 | ~MB    |
-| eos-mgm        | namespace                     | /mnt/eos\_namespace              | /var/eos                        | /mnt/mgm\_namepsace        | ext4 | ~GB    |
-| eos-fst*N*     | user data                     | /mnt/fst\_userdata               | /mnt/fst\_userdata              | /mnt/fst\_userdata         | xfs  | ~TB/PB | Scalable
-| cernbox        | config + user shares (SQLite) | /mnt/cbox\_shares\_db/cbox\_data | /var/www/html/cernbox/data      | /mnt/cbox\_shares\_db      | ext4 | ~MB    |
-| cernboxmysql   | config + user shares (MySQL)  | /mnt/cbox_shares_db/cbox_MySQL   | /var/lib/mysql                  | /mnt/cbox\_shares\_db      | ext4 | ~MB    |
-| swan           | user status database          | /mnt/jupyterhub\_data            | /srv/jupyterhub/jupyterhub_data | /mnt/jupyterhub\_data      | ext4 | ~MB    |
+| eos-mgm        | namespace                     | /mnt/eos_namespace               | /var/eos                        | /mnt/mgm_namepsace         | ext4 | ~GB    |
+| eos-fst*N*     | user data                     | /mnt/fst_userdata                | /mnt/fst_userdata               | /mnt/fst_userdata          | xfs  | ~TB/PB | Scalable
+| cernbox        | config + user shares (SQLite) | /mnt/cbox_shares_db/cbox_data    | /var/www/html/cernbox/data      | /mnt/cbox_shares_db        | ext4 | ~MB    |
+| cernboxmysql   | config + user shares (MySQL)  | /mnt/cbox_shares_db/cbox_MySQL   | /var/lib/mysql                  | /mnt/cbox_shares_db        | ext4 | ~MB    |
+| swan           | user status database          | /mnt/jupyterhub_data             | /srv/jupyterhub/jupyterhub_data | /mnt/jupyterhub_data       | ext4 | ~MB    |
 
-*Note \**: Whlie host paths and mount points can be modified according to site-specific requirements, never modify the container path.
+*Note \**: While host paths and mount points can be modified according to site-specific requirements, never modify the container path.
 
 *Note \*\**: The size reported is the order of magnitude. Actual size depends on system usage, storage requirements, and user pool size.
+
+**WARNING**:
+Subfolders in `/mnt/<name-of-the-volume>` are NOT automatically created at the time of deployment.
+Please, proceed as follows:
+1. Attach, mount, and format the external volumes to the nodes where containers requiring critical persistent storage will execute;
+2. Create the required subfolders:
+  * `/mnt/ldap/userdb` and `/mnt/ldap/config` for LDAP
+  * `/mnt/cbox_shares_db/cbox_data` and `/mnt/cbox_shares_db/cbox_MySQL`
+3. Deploy the service (see below "Deployment of Services")
+
+If the deployment of services fails, please inspect the pod status and look for errors related to mount of volumes.
+
+Below, an example of failed deployment for service LDAP because of subfolders not pre-created.
+1. Pod for LDAP hangs in status "ContainerCreating":
+```
+[root@kubedevel-master kuboxed]# kubectl -n boxed get pods -o wide -a
+NAME      READY     STATUS              RESTARTS   AGE       IP        NODE
+ldap      0/1       ContainerCreating   0          7s        <none>    kubedevel-worker1.cern.ch
+```
+2. Inspect the Pod status with `# kubectl -n boxed describe pod ldap` and look at the list of events provided at the bottom:
+```
+Events:
+  Type     Reason                 Age              From                                Message
+  ----     ------                 ----             ----                                -------
+  Normal   Scheduled              3s               default-scheduler                   Successfully assigned ldap to kubedevel-worker1.cern.ch
+  Normal   SuccessfulMountVolume  2s               kubelet, kubedevel-worker1.cern.ch  MountVolume.SetUp succeeded for volume "default-token-2vvcr"
+  Warning  FailedMount            1s (x3 over 2s)  kubelet, kubedevel-worker1.cern.ch  MountVolume.SetUp failed for volume "ldap-config" : hostPath type check failed: /mnt/ldap/config is not a directory
+  Warning  FailedMount            1s (x3 over 2s)  kubelet, kubedevel-worker1.cern.ch  MountVolume.SetUp failed for volume "ldap-userdb" : hostPath type check failed: /mnt/ldap/userdb is not a directory
+```
 
 
 #### Required Persistent Storage - System Logs :
@@ -211,7 +240,7 @@ As a rule of thumb, critical storage (e.g., user account information, user data,
 | eos-mgm        | MQ logs (if colocated w/ MGM) | /var/kubeVolumes/mgm_logs        | /var/log/eos                    | --                         | --   | ~GB    |
 | eos-mq         | MQ logs                       | /var/kubeVolumes/mq_logs         | /var/log/eos                    | --                         | --   | ~GB    |
 | eos-fst*N*     | FST logs                      | /var/kubeVolumes/fst_logs        | /var/log/eos                    | --                         | --   | ~GB    |
-| cernbox        | cernbox logs                  | /mnt/cbox\_shares\_db/cbox\_data | /var/www/html/cernbox/data      | /mnt/cbox\_shares\_db      | ext4 | ~MB    | Colocated with shares db
+| cernbox        | cernbox logs                  | /mnt/cbox_shares_db/cbox_data    | /var/www/html/cernbox/data      | /mnt/cbox_shares_db        | ext4 | ~MB    | Colocated with shares db
 | cernbox        | httpd logs                    | /var/kubeVolumes/httpd_logs      | /var/log/httpd                  | --                         | --   | ~GB    |
 | cernbox        | shibboleth logs               | /var/kubeVolumes/shibboleth_logs | /var/log/shibboleth             | --                         | --   | ~GB    |
 | cernboxgateway | nginx logs                    | /var/kubeVolumes/cboxgateway_logs| /var/log/nginx                  | --                         | --   | ~GB    |
@@ -471,6 +500,4 @@ It is possible to configure some of the service internals via environment variab
 
 
 ### How to Fail Over a Node with Persistent Storage Attached
-
-    WIP
 
