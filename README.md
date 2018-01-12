@@ -207,16 +207,16 @@ Subfolders in `/mnt/<name-of-the-volume>` are NOT automatically created at the t
 Please, proceed as follows:
 1. Attach, mount, and format the external volumes to the nodes where containers requiring critical persistent storage will execute;
 2. Create the required subfolders:
-  * `/mnt/ldap/userdb` and `/mnt/ldap/config` for LDAP
-  * `/mnt/cbox_shares_db/cbox_data` and `/mnt/cbox_shares_db/cbox_MySQL`
-3. Deploy the service (see below "Deployment of Services")
+  * `/mnt/ldap/userdb` and `/mnt/ldap/config` for LDAP;
+  * `/mnt/cbox_shares_db/cbox_data` and `/mnt/cbox_shares_db/cbox_MySQL` for CERNBox;
+3. Deploy the service (see below "Deployment of Services").
 
 If the deployment of services fails, please inspect the pod status and look for errors related to mount of volumes.
 
 Below, an example of failed deployment for service LDAP because of subfolders not pre-created.
 1. Pod for LDAP hangs in status "ContainerCreating":
 ```
-[root@kubedevel-master kuboxed]# kubectl -n boxed get pods -o wide -a
+# kubectl -n boxed get pods -o wide -a
 NAME      READY     STATUS              RESTARTS   AGE       IP        NODE
 ldap      0/1       ContainerCreating   0          7s        <none>    kubedevel-worker1.cern.ch
 ```
