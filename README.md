@@ -1,9 +1,7 @@
 ## System Architecture
 The system consists of three service bubbles matching the provided services: EOS (orange), CERNBOX (blue), and SWAN (green).
 
-
-        Picture -- WIP
-
+![System Architecture](https://raw.githubusercontent.com/cernbox/kuboxed/master/docs/architecture.png)
 
 Each of the three blocks contains multiple Docker containers that are required to run in order to have the services up and available.
 In what follows, a short description of the containers required for each service is provided.
