@@ -9,7 +9,7 @@ SUPPORTED_NODE_TYPES=(master worker)
 BASIC_SOFTWARE="wget git sudo "
 
 DOCKER_VERSION="-17.03.2.ce"	# Latest by Kubernetes v1.8.0
-KUBE_VERSION="-1.8.0-0"
+KUBE_VERSION="-1.8.1-0"
 
 OS_RELEASE="/etc/os-release"
 
@@ -22,6 +22,13 @@ OS_RELEASE="/etc/os-release"
 
 
 # ----- Functions ----- #
+
+# Disable SELinux if needed
+disable_selinux ()
+{
+    test $(getenforce) == "Disabled" || setenforce 0
+}
+
 
 # Check to be root
 need_root ()

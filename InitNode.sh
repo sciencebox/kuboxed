@@ -11,6 +11,7 @@
 #
 ###
 
+set -e
 source etc/common.sh
 
 # TODO: Currently only centos7 is supported 
