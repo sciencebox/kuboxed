@@ -5,7 +5,6 @@
 #  * JupyterHub to spawn, manage, and proxy multiple Jupyter sessions for single users
 #  * EOS client for fuse-mounting user's home directory
 #  * CVMFS client to fetch scientific libraries on-demand
-#  * Cluster wise squid proxy for CVMFS (cvmfssquid)
 #  * Image puller to pull single-user container image beforehand
 #
 # NOTE: SWAN requires access to the Kubernetes cluster resources and the ability 
@@ -147,59 +146,6 @@ spec:
           type: DirectoryOrCreate
 
 ---
-# SQUID Proxy for CVMFS -- Deployment
-apiVersion: apps/v1beta1
-kind: Deployment
-metadata:
-  name: &name cvmfssquid
-  namespace: &namespace boxed
-  labels:
-    app: *name
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: *name
-        name: *name
-    spec:
-      terminationGracePeriodSeconds: 60
-      nodeSelector:
-        nodeApp: swan
-      containers:
-      - name: cvmfssquid
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfssquid:v0
-        imagePullPolicy: IfNotPresent
-        env:
-        ### PodInfo ###
-        - name: PODINFO_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: PODINFO_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: PODINFO_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        - name: PODINFO_NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        - name: PODINFO_NODE_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.hostIP
-        - name: DEPLOYMENT_TYPE
-          value: "kubernetes"
-        - name: CVMFS_UPSTREAM_CONNECTION
-          value: "squid"
-        - name: CVMFS_SQUID_ENDPOINT
-          value: "http://cvmfssquid.boxed.svc.cluster.local:3128"
-
----
 # CVMFS client, EOS fuse gateway, and Image puller -- DaemonSet
 #
 # Note: Deploy EOS Fuse and CVMFS daemons on all the nodes where
@@ -289,7 +235,7 @@ spec:
       ###
       # 2. CVMFS
       - name: cvmfs
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.3
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.2
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -327,11 +273,6 @@ spec:
           value: "kubernetes"
         - name: CVMFS_FOLDER
           value: "/cvmfs"
-        - name: CVMFS_UPSTREAM_CONNECTION
-          value: "squid"
-        - name: CVMFS_SQUID_ENDPOINT
-          value: "http://cvmfssquid.boxed.svc.cluster.local:3128"
-
       ###
       # 3. Image puller
       - name: imagepuller
@@ -396,22 +337,6 @@ spec:
 
 ---
 ### SERVICE ###
-apiVersion: v1
-kind: Service
-metadata:
-  name: &name cvmfssquid
-  namespace: boxed
-spec:
-  selector:
-    app: *name
-  ports:
-  - name: squid-http
-    protocol: TCP
-    port: 3128
-    targetPort: 3128
-  type: ClusterIP
-
-
 # NOTE: A kubernetes service to access SWAN in only needed when 
 #	hostNetwork connectivity is not enabled on the cluster node
 #	where jupyterhub runs.
@@ -440,4 +365,3 @@ spec:
 #    targetPort: 443
 #    nodePort: 30443
 #  type: NodePort
-
