@@ -5,6 +5,7 @@
 #  * JupyterHub to spawn, manage, and proxy multiple Jupyter sessions for single users
 #  * EOS client for fuse-mounting user's home directory
 #  * CVMFS client to fetch scientific libraries on-demand
+#  * Image puller to pull single-user container image beforehand
 #
 # NOTE: SWAN requires access to the Kubernetes cluster resources and the ability 
 #	to list and start containers in the namespace where it is deployed.
@@ -145,12 +146,17 @@ spec:
           type: DirectoryOrCreate
 
 ---
-# CVMFS client and EOS fuse gateway -- DaemonSet
+# CVMFS client, EOS fuse gateway, and Image puller -- DaemonSet
 #
 # Note: Deploy EOS Fuse and CVMFS daemons on all the nodes where
 #       single-user sessions can land. Such nodes are identified
 #       via NodeSelector key-value provided by Kubernetes.
 #       Default is: "nodeApp: swan-users"
+#
+# Note: Image puller is used to download the single-user
+#       container image before the first request from the user comes.
+#       This image is usually 3GB+ in size and, if not already
+#       available locally, would require several minutes to download.
 #
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -261,13 +267,49 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.hostIP
-        env:
         - name: THIS_CONTAINER
           value: "CVMFS"
         - name: DEPLOYMENT_TYPE
           value: "kubernetes"
         - name: CVMFS_FOLDER
           value: "/cvmfs"
+      ###
+      # 3. Image puller
+      - name: imagepuller
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/imagepuller:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: &vm_docker-socket docker-socket
+          mountPath: /var/run/docker.sock
+        env:
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: THIS_CONTAINER
+          value: "ImagePuller"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: DAEMON_SET
+          value: "true"
+        - name: DOCKER_IMAGES
+          value: "cernphsft/systemuser:v2.11"
 
       volumes:
       # EOS-FUSE
@@ -287,6 +329,11 @@ spec:
       - name: *vm_rdv-cvmfs
         hostPath:
           path: /cvmfs
+      # ImagePuller
+      - name: *vm_docker-socket # To pull single-user container image
+        hostPath:
+          path: /var/run/docker.sock
+
 
 ---
 ### SERVICE ###
