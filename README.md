@@ -1,5 +1,5 @@
 # Welcome to BOXED
-### *KuBoxed -- Scalable Deployment with Kubernetes *
+### *KuBoxed -- Scalable Deployment with Kubernetes*
 
 -----
 
