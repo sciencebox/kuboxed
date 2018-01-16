@@ -194,10 +194,6 @@ spec:
               fieldPath: status.hostIP
         - name: DEPLOYMENT_TYPE
           value: "kubernetes"
-        - name: CVMFS_UPSTREAM_CONNECTION
-          value: "squid"
-        - name: CVMFS_SQUID_ENDPOINT
-          value: "http://cvmfssquid.boxed.svc.cluster.local:3128"
 
 ---
 # CVMFS client, EOS fuse gateway, and Image puller -- DaemonSet
