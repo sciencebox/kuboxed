@@ -1,3 +1,23 @@
+# Welcome to BOXED
+### *KuBoxed -- Scalable Deployment with Kubernetes*
+
+-----
+
+https://cernbox.cern.ch/cernbox/doc/boxed
+
+Self-contained, containerized package for next-generation cloud storage and computing services for scientific and general-purpose use:
+
+ - CERNBox: https://cernbox.web.cern.ch
+ - EOS: https://eos.web.cern.ch
+ - SWAN: https://swan.web.cern.ch
+ - CVMFS: https://cvmfs.web.cern.ch
+
+
+Packaging by: Enrico Bocchi, Hugo Gonzalez Labrador, Jozsef Makai, Jakub T. Moscicki
+
+
+-----
+
 ## System Architecture
 The system consists of three service blocks matching the provided services: EOS (red), CERNBOX (green), and SWAN (orange).
 
