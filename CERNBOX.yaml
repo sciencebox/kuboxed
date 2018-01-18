@@ -10,6 +10,26 @@
 
 ### SECRETS ###
 #
+### SSL certificates ###
+# Note: These certificates are self-signed and for testing purposes only. Please replace them with proper certificates.
+#
+# Note: All Kubernetes secrets must be base64 encoded. Please encode your certificates with
+#       `cat /path/to/your/certificate.key | base64 -w 0` for Linux-based systems
+#       More details available here: https://kubernetes.io/docs/concepts/configuration/secret/
+###
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cernbox-certs
+  namespace: boxed
+type: Opaque
+data:
+  boxed.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBem5HeDErQ2FyalBWOVM3bWFQK3pqWlZhaXZZdm5acllBQlNIUnoyNis5emE5a1dsCkVUeWxpMzdiVnd0OEdQQnZtZ3RqVU1yK25WTFlETU42K2o0Y1Vrem1RMnFHa0hXN1Q2T3BOM2FNTUVFZ2VnQWUKYzkvU2dQdE9EZUlXK3paaUJUNW80SmpKNDgzRVc1cURDUkQxenRiSnl3WVAvR1ZLTlFpS0RaR3hwU3MxMXYzTgowWGwvM1pGK1J6KzA1dW5uaEIrT2NaT0JKNHUrSlozK2tGbFR5YU5GdENHd2R1N09jWUl3dE1nMXpmWXZpTTFQCnJjYkpUYS9OM1EzR0FHSFBYQzVsZGNyYWFnK1Zib3FtNk83RGk4QzFVNUFMUmRxWE1TMW4yRVpLekprUHdTaUMKem83VElUYjh2SFdFNG1ySU1XVGIvVjRCMjhzeHgyQ2lScDJVTHdJREFRQUJBb0lCQUV0YnYxS1JQNFdGa0gyZQpzQ2IxNkNJdnVjeHVEM1dWbDNGNERPV1ppQTcyVU11RElyMUhDUnNCcEttQ25Mc3gwVnRHK3VyOEhyTnBFVXFmCmROMnlISDZDYWErRVREaWhjVTJoN1Z3OG52SGlaQ3VFclprWXcrdW5VSmZLeHg3T2ZEdHp5NjdvdHhHOEJBaDQKUDRyb3NRSGU3K3gzZXhCa0hSRjgyNEFXaGVWSFZ3WUtTQUVwZFpiczZUVTdwTWhnWEVSNHNJa1kyNFhFazVOVApZRERmU1NOeUt1SXh6RzlVM1hXNHNUSmgyZkFRVXNpa0o1STVmTWh4QURZTVN2TWk2VjZvSTJ5N0NsL1J2eTJtClhnQnZVK0hoazlvNWZFaVdRcksrdUZXWURBWlhhdW1NTFZ1YXUvNlBGNWw1RWRJczZVaHpZc3ZzamRFNy8yWlIKejY3UUg0RUNnWUVBL2U2eGVxbU5KZlVGRUZxTXFBMzVjd1hXWXVDRndEOFJNT0V2Z1dtMnB4SzgzQ3BDa3hpSwpLajZwLzBRbnpQd0R1UWFtZ3NSS3YxbU5mbnFaTldFN2tTcG5WelNLSGFXVjhrR2pYOUVZVzcxWEdMRXJ5RE9mClhwVEIxeUxTelpWNnJZcmZWMnQzS2kwaFJvYXpUWVpWMk1CdW1yME9UMGNyaWRJL2hCbnB1TzhDZ1lFQTBDQUQKMWZYUTh0Zkx6MXNNdVhHUTY1dWc0Q0I1bWk5cUlnQmxLYXQyTzdtNHlsWC9HcDMvSlFoSTlneHhmaXRrMjdWSQpGc2Jvc2wzaU5FSE5HdUo3UjBOSGFjMm4zSjE2dXBzNWtuWmQydmZkQU9wZnA3YWRQL3ZqMS9sZHhTb25zTmZtCjdMUDFlWDNMaDk1ZC9NL1pHZU5rS1lZV3VtMDVmS0x4aFJHWldNRUNnWUJTbzJ0K3o4N3ZtMTJhaE4xaGs2cXEKbEN2QTRmQ2xMK0VZVnpCdW5VaWo5cVVmd1dFSkhlTlkvQ3UydHlkOHZrYzMzOEl3ckZEbkZPM0hTMzZ3c0lRQwpLaHFYZHJHOEZEZElMN1JMYW5EUzZqdDkvYXFSN0xyZ3ZPaVlhdXpQbXVYaHRHQWF3dzUwMjFzSTZLMVJmWFpTCm84MWE3a3ZKNFE5Nk9zSVE2NTMwWVFLQmdRREpiK01taUZnbll0UUJxd2RpeVZkUm92eVBVUDlCUzFqMjlkanoKL3Q5ZHFVRUFuVUZldXNORFRZU0ltTHlVT0YzVEJOOTBKQ3IrMEQxckJMRUdyMlJRTWY4Qm1hbzVyalltUEt6NQpaQlV0SlMvRGZoVDlGNU9WWlRBK1RqNEM0ZTB1alprVlNveHhmVjZyNzM2YWZYV01SL2tlODRnMkFoZGMyYnpYClpaUTlRUUtCZ1FENStpTk5wb0NRT0d1OW1WenkzUlBIa0xjTVo4RW04SUdqQ0pRNTYrWitQT1hTWEEwR3dlQ3EKcG55Wkw2cXJNcWp2VFErWDlNWVdhMmR6R00wSFd4NWFMMVN0UVcyNmYyQTZGNTFZN09FdW9JSnB1YkZxOXJ0QgpsZ1FsUG5rN3MxZkR1Y3FPblZMNDBPd1J3SDc0bTMwLy8zcU1IQlprbXBvQTJtbEdHSCtqRkE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+  boxed.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURBRENDQWVnQ0NRQ1Y4bGJrL1BOYTREQU5CZ2txaGtpRzl3MEJBUXNGQURCQ01Rc3dDUVlEVlFRR0V3SlkKV0RFVk1CTUdBMVVFQnd3TVJHVm1ZWFZzZENCRGFYUjVNUnd3R2dZRFZRUUtEQk5FWldaaGRXeDBJRU52YlhCaApibmtnVEhSa01CNFhEVEUzTURNd056RXhORFF5TjFvWERURTRNRE13TnpFeE5EUXlOMW93UWpFTE1Ba0dBMVVFCkJoTUNXRmd4RlRBVEJnTlZCQWNNREVSbFptRjFiSFFnUTJsMGVURWNNQm9HQTFVRUNnd1RSR1ZtWVhWc2RDQkQKYjIxd1lXNTVJRXgwWkRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTTV4c2RmZwptcTR6MWZVdTVtai9zNDJWV29yMkw1MmEyQUFVaDBjOXV2dmMydlpGcFJFOHBZdCsyMWNMZkJqd2I1b0xZMURLCi9wMVMyQXpEZXZvK0hGSk01a05xaHBCMXUwK2pxVGQyakRCQklIb0FIblBmMG9EN1RnM2lGdnMyWWdVK2FPQ1kKeWVQTnhGdWFnd2tROWM3V3ljc0dEL3hsU2pVSWlnMlJzYVVyTmRiOXpkRjVmOTJSZmtjL3RPYnA1NFFmam5HVApnU2VMdmlXZC9wQlpVOG1qUmJRaHNIYnV6bkdDTUxUSU5jMzJMNGpOVDYzR3lVMnZ6ZDBOeGdCaHoxd3VaWFhLCjJtb1BsVzZLcHVqdXc0dkF0Vk9RQzBYYWx6RXRaOWhHU3N5WkQ4RW9nczZPMHlFMi9MeDFoT0pxeURGazIvMWUKQWR2TE1jZGdva2FkbEM4Q0F3RUFBVEFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBS056ZXJyMGpwTS92NFZoNQp1Yy8vU3B2eEszWjAyeU5TV2ZYU1RUL2RuL1kwRkI4dkJxdkszdjVDV1NXa0Rnejc3WEkvSmRSZDQzcEgzVDJUCnZGMDRoSnVkUTJESGhiZER0cjBZRXdvTlY1TE9QRHhiNnhNbkMvWFRnR09EZ2ZHdGkwWVVBbisycVVNU0J6UksKMGhMeFV6Q0ZnZHEyeFZaOGl0OFVBZm1BNUc4OUlHbDEvWXUxMlhON0h4OFBOMGdyVjBQQXJ5SDZCaVhROGNUYQpjcTAzS0N1ZExhOUluQ2ZyRm9DWjRnSC9TZE50ZXpzT3NFWXA2WHlkZ0xmVlY5V1pTUVNreVFkUUNiV2duYytLCkVmUGkrRzBHTXp6KzFLQkpzbnRTOTVqdUJBVE1ualA2OWZKaUZQcGRlY2VrZ0F2OW1rVmdvYklvdVVHMjJjRW8KbWZtWnhnPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  boxed.csr: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ2h6Q0NBVzhDQVFBd1FqRUxNQWtHQTFVRUJoTUNXRmd4RlRBVEJnTlZCQWNNREVSbFptRjFiSFFnUTJsMAplVEVjTUJvR0ExVUVDZ3dUUkdWbVlYVnNkQ0JEYjIxd1lXNTVJRXgwWkRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCCkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU01eHNkZmdtcTR6MWZVdTVtai9zNDJWV29yMkw1MmEyQUFVaDBjOXV2dmMKMnZaRnBSRThwWXQrMjFjTGZCandiNW9MWTFESy9wMVMyQXpEZXZvK0hGSk01a05xaHBCMXUwK2pxVGQyakRCQgpJSG9BSG5QZjBvRDdUZzNpRnZzMllnVSthT0NZeWVQTnhGdWFnd2tROWM3V3ljc0dEL3hsU2pVSWlnMlJzYVVyCk5kYjl6ZEY1ZjkyUmZrYy90T2JwNTRRZmpuR1RnU2VMdmlXZC9wQlpVOG1qUmJRaHNIYnV6bkdDTUxUSU5jMzIKTDRqTlQ2M0d5VTJ2emQwTnhnQmh6MXd1WlhYSzJtb1BsVzZLcHVqdXc0dkF0Vk9RQzBYYWx6RXRaOWhHU3N5WgpEOEVvZ3M2TzB5RTIvTHgxaE9KcXlERmsyLzFlQWR2TE1jZGdva2FkbEM4Q0F3RUFBYUFBTUEwR0NTcUdTSWIzCkRRRUJDd1VBQTRJQkFRQVBzSDB0TGd6TzRjMERDd296Uzl5Y2FmTVY5QWRDYkNIdTJHL3BPdGhnaStWNkY2aTcKMURLMWRuelpXWjhFQVEwaW4wWkFtdlVIVVRsWEdGQ3B5b2hKbGtnczdpd3FRT3A3UjNiQnZhS0hxQitCMWpTZApoSjlwaElzSkFnVXFqVXE2ei9oUDV5RU40OW43YWIreWEzREp5Zm1iR2YxSmNVOC9COE5Hc0JBLzBJc0NRa2NxCmFFTFVncDFCWlg3TFpwSlFwaUVHWnBCME1DUzMvdUV0Z2EyQTJQZHEyWnlDb1NOV3d5dEFvN2lOa3JZdG4rd1AKa1lZWldCZkFjZGZNOVNQaVBnRXRmNnJzRWFBR0J4KzVicDBma0Rtbm1RUE9OZ2ZhT211UEMzZk9XRGdTMmtSQQowZnVRWFU2MjlFOEdpUEQ2QXZCemptcTc1M0VVVzZNanlUQkQKLS0tLS1FTkQgQ0VSVElGSUNBVEUgUkVRVUVTVC0tLS0tCg==
+#
+###
+---
 ### MySQL (MariaDB) configuration variables as secrets ###
 # Please read more here on the parameters to be configured: https://hub.docker.com/r/library/mariadb/
 #
@@ -34,6 +54,8 @@ data:
   mysql_user: Y2VybmJveF9iYWNrZW5kCg==
   # Database password: "cernbox_backend_1234567890"
   mysql_password: Y2VybmJveF9iYWNrZW5kXzEyMzQ1Njc4OTAK
+#
+###
 
 
 ### PODS ###
@@ -151,7 +173,7 @@ spec:
         #  hostPort: &MYSQL_PORT 3306
         #  containerPort: *MYSQL_PORT
         volumeMounts:
-        - name: &vm_certs certs
+        - name: &vm_cernbox-certs cernbox-certs
           mountPath: /etc/boxed/certs
         - name: &vm_mysql-config mysql-config
           mountPath: /etc/boxed/mysql_secrets
@@ -203,9 +225,9 @@ spec:
           #value: "sqlite"
           value: "mysql"
       volumes:
-      - name: *vm_certs
+      - name: *vm_cernbox-certs
         secret:
-          secretName: certs
+          secretName: cernbox-certs
           defaultMode: 0644
       - name: *vm_mysql-config
         secret:
@@ -263,7 +285,7 @@ spec:
           hostPort: 443
           containerPort: 443
         volumeMounts:
-        - name: &vm_certs certs
+        - name: &vm_cernbox-certs cernbox-certs
           mountPath: /etc/boxed/certs
         - name: &vm_logs cboxgateway-logs
           mountPath: /var/log/nginx
@@ -331,9 +353,9 @@ spec:
             exec:
               command: ["bash", "/root/stop.sh"]
       volumes:
-      - name: *vm_certs
+      - name: *vm_cernbox-certs
         secret:
-          secretName: certs
+          secretName: cernbox-certs
           defaultMode: 0644
       - name: *vm_logs
         hostPath:
