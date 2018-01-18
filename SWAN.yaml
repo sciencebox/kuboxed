@@ -327,6 +327,10 @@ spec:
           value: "squid"
         - name: CVMFS_SQUID_ENDPOINT
           value: "http://cvmfssquid.boxed.svc.cluster.local:3128"
+        - name: SOFTWARE_STACK
+          value: "LCG_91"
+        - name: PLATFORM
+          value: "x86_64-slc6-gcc62-opt"
 
       ###
       # 3. Image puller
