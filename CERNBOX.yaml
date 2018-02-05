@@ -83,7 +83,7 @@ spec:
         nodeApp: cernbox
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxmysql:v0
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxmysql:v0.5
         imagePullPolicy: IfNotPresent
         #ports:
         #- name: http
@@ -165,7 +165,7 @@ spec:
       subdomain: *name
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.4
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.5
         imagePullPolicy: IfNotPresent
         #ports:
         #- name: http
@@ -273,7 +273,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.3
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.4
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
