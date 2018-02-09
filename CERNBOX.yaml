@@ -324,30 +324,32 @@ spec:
           value: "80"
         - name: HTTPS_PORT
           value: "443"
-        - name: EOS_MGM_ALIAS
-          value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
-        - name: EOS_MGM_ALIAS_PORT
-          value: "8000"
-        - name: SWAN_BACKEND
-          value: "up2kube-swan.cern.ch"
-        - name: SWAN_BACKEND_PORT
-          value: "443"
-        - name: OWNCLOUD_BACKEND
-          value: "cernbox.cernbox.boxed.svc.cluster.local"
-        - name: OWNCLOUD_BACKEND_PORT
-          value: "443"
         - name: LDAP_BACKEND1
           value: "ldap.boxed.svc.cluster.local"
         - name: LDAP_BACKEND2
           value: "ldap.boxed.svc.cluster.local"
+        - name: EOS_MGM_ALIAS
+          value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
+        - name: EOS_MGM_ALIAS_PORT
+          value: "8000"
+        - name: OWNCLOUD_BACKEND
+          value: "cernbox.cernbox.boxed.svc.cluster.local"
+        - name: OWNCLOUD_BACKEND_PORT
+          value: "443"
         - name: WEBDAV_CLIENT_CERT_PORT
           value: "4443"
+        - name: SWAN_BACKEND
+          value: "up2kube-swan.cern.ch"
+        - name: SWAN_BACKEND_PORT
+          value: "443"
         - name: EOS_GATEWAY_SELF_REGISTRATION
           value: "true"
         - name: EOS_GATEWAY_AUTH
           value: "https"
         - name: EOS_MGM_ENDPOINT    # Same as EOS_MGM_ALIAS
           value: "eos-mgm.boxed.svc.cluster.local"
+        - name: ESCAPE_LANDING_PAGE
+          value: "false"
         lifecycle:
           preStop:
             exec:
