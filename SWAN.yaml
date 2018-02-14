@@ -167,6 +167,12 @@ spec:
           value: "/cvmfs"
         - name: EOS_FOLDER
           value: "/eos"
+        - name: CUSTOMIZATION_REPO
+          value: "https://github.com/up2university/SWAN-customizations.git"
+        - name: CUSTOMIZATION_COMMIT
+          value: ""
+        - name: CUSTOMIZATION_SCRIPT
+          value: ""
       volumes:
       - name: *vm_swan-certs
         secret:

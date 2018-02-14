@@ -224,6 +224,12 @@ spec:
         - name: DATABASE_BACKEND
           #value: "sqlite"
           value: "mysql"
+        - name: CUSTOMIZATION_REPO
+          value: "https://github.com/up2university/CERNBox-customizations.git"
+        - name: CUSTOMIZATION_COMMIT
+          value: ""
+        - name: CUSTOMIZATION_SCRIPT
+          value: ""
       volumes:
       - name: *vm_cernbox-certs
         secret:
