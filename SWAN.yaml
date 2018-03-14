@@ -279,7 +279,7 @@ spec:
       ###
       # 1. EOS-FUSE
       - name: eos-fuse
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.2
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.3
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -319,8 +319,8 @@ spec:
           value: "kubernetes"
         - name: LDAP_ENDPOINT
           value: "ldap.boxed.svc.cluster.local"
-        - name: EOS_MGM_ENDPOINT
-          value: "eos-mgm.boxed.svc.cluster.local"
+        - name: EOS_MGM_ALIAS
+          value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
         - name: EOS_FOLDER
           value: "/eos"
         - name: EOS_GATEWAY_SELF_REGISTRATION
