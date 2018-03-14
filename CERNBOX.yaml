@@ -10,13 +10,14 @@
 
 ### SECRETS ###
 #
-### SSL certificates ###
-# Note: These certificates are self-signed and for testing purposes only. Please replace them with proper certificates.
-#
 # Note: All Kubernetes secrets must be base64 encoded. Please encode your certificates with
 #       `cat /path/to/your/certificate.key | base64 -w 0` for Linux-based systems
 #       More details available here: https://kubernetes.io/docs/concepts/configuration/secret/
+#
 ###
+# 1.SSL certificates
+# Note: These certificates are self-signed and for testing purposes only. Please replace them with proper certificates.
+#
 apiVersion: v1
 kind: Secret
 metadata:
@@ -28,9 +29,33 @@ data:
   boxed.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURBRENDQWVnQ0NRQ1Y4bGJrL1BOYTREQU5CZ2txaGtpRzl3MEJBUXNGQURCQ01Rc3dDUVlEVlFRR0V3SlkKV0RFVk1CTUdBMVVFQnd3TVJHVm1ZWFZzZENCRGFYUjVNUnd3R2dZRFZRUUtEQk5FWldaaGRXeDBJRU52YlhCaApibmtnVEhSa01CNFhEVEUzTURNd056RXhORFF5TjFvWERURTRNRE13TnpFeE5EUXlOMW93UWpFTE1Ba0dBMVVFCkJoTUNXRmd4RlRBVEJnTlZCQWNNREVSbFptRjFiSFFnUTJsMGVURWNNQm9HQTFVRUNnd1RSR1ZtWVhWc2RDQkQKYjIxd1lXNTVJRXgwWkRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTTV4c2RmZwptcTR6MWZVdTVtai9zNDJWV29yMkw1MmEyQUFVaDBjOXV2dmMydlpGcFJFOHBZdCsyMWNMZkJqd2I1b0xZMURLCi9wMVMyQXpEZXZvK0hGSk01a05xaHBCMXUwK2pxVGQyakRCQklIb0FIblBmMG9EN1RnM2lGdnMyWWdVK2FPQ1kKeWVQTnhGdWFnd2tROWM3V3ljc0dEL3hsU2pVSWlnMlJzYVVyTmRiOXpkRjVmOTJSZmtjL3RPYnA1NFFmam5HVApnU2VMdmlXZC9wQlpVOG1qUmJRaHNIYnV6bkdDTUxUSU5jMzJMNGpOVDYzR3lVMnZ6ZDBOeGdCaHoxd3VaWFhLCjJtb1BsVzZLcHVqdXc0dkF0Vk9RQzBYYWx6RXRaOWhHU3N5WkQ4RW9nczZPMHlFMi9MeDFoT0pxeURGazIvMWUKQWR2TE1jZGdva2FkbEM4Q0F3RUFBVEFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBS056ZXJyMGpwTS92NFZoNQp1Yy8vU3B2eEszWjAyeU5TV2ZYU1RUL2RuL1kwRkI4dkJxdkszdjVDV1NXa0Rnejc3WEkvSmRSZDQzcEgzVDJUCnZGMDRoSnVkUTJESGhiZER0cjBZRXdvTlY1TE9QRHhiNnhNbkMvWFRnR09EZ2ZHdGkwWVVBbisycVVNU0J6UksKMGhMeFV6Q0ZnZHEyeFZaOGl0OFVBZm1BNUc4OUlHbDEvWXUxMlhON0h4OFBOMGdyVjBQQXJ5SDZCaVhROGNUYQpjcTAzS0N1ZExhOUluQ2ZyRm9DWjRnSC9TZE50ZXpzT3NFWXA2WHlkZ0xmVlY5V1pTUVNreVFkUUNiV2duYytLCkVmUGkrRzBHTXp6KzFLQkpzbnRTOTVqdUJBVE1ualA2OWZKaUZQcGRlY2VrZ0F2OW1rVmdvYklvdVVHMjJjRW8KbWZtWnhnPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
   boxed.csr: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ2h6Q0NBVzhDQVFBd1FqRUxNQWtHQTFVRUJoTUNXRmd4RlRBVEJnTlZCQWNNREVSbFptRjFiSFFnUTJsMAplVEVjTUJvR0ExVUVDZ3dUUkdWbVlYVnNkQ0JEYjIxd1lXNTVJRXgwWkRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCCkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU01eHNkZmdtcTR6MWZVdTVtai9zNDJWV29yMkw1MmEyQUFVaDBjOXV2dmMKMnZaRnBSRThwWXQrMjFjTGZCandiNW9MWTFESy9wMVMyQXpEZXZvK0hGSk01a05xaHBCMXUwK2pxVGQyakRCQgpJSG9BSG5QZjBvRDdUZzNpRnZzMllnVSthT0NZeWVQTnhGdWFnd2tROWM3V3ljc0dEL3hsU2pVSWlnMlJzYVVyCk5kYjl6ZEY1ZjkyUmZrYy90T2JwNTRRZmpuR1RnU2VMdmlXZC9wQlpVOG1qUmJRaHNIYnV6bkdDTUxUSU5jMzIKTDRqTlQ2M0d5VTJ2emQwTnhnQmh6MXd1WlhYSzJtb1BsVzZLcHVqdXc0dkF0Vk9RQzBYYWx6RXRaOWhHU3N5WgpEOEVvZ3M2TzB5RTIvTHgxaE9KcXlERmsyLzFlQWR2TE1jZGdva2FkbEM4Q0F3RUFBYUFBTUEwR0NTcUdTSWIzCkRRRUJDd1VBQTRJQkFRQVBzSDB0TGd6TzRjMERDd296Uzl5Y2FmTVY5QWRDYkNIdTJHL3BPdGhnaStWNkY2aTcKMURLMWRuelpXWjhFQVEwaW4wWkFtdlVIVVRsWEdGQ3B5b2hKbGtnczdpd3FRT3A3UjNiQnZhS0hxQitCMWpTZApoSjlwaElzSkFnVXFqVXE2ei9oUDV5RU40OW43YWIreWEzREp5Zm1iR2YxSmNVOC9COE5Hc0JBLzBJc0NRa2NxCmFFTFVncDFCWlg3TFpwSlFwaUVHWnBCME1DUzMvdUV0Z2EyQTJQZHEyWnlDb1NOV3d5dEFvN2lOa3JZdG4rd1AKa1lZWldCZkFjZGZNOVNQaVBnRXRmNnJzRWFBR0J4KzVicDBma0Rtbm1RUE9OZ2ZhT211UEMzZk9XRGdTMmtSQQowZnVRWFU2MjlFOEdpUEQ2QXZCemptcTc1M0VVVzZNanlUQkQKLS0tLS1FTkQgQ0VSVElGSUNBVEUgUkVRVUVTVC0tLS0tCg==
 #
-###
 ---
-### MySQL (MariaDB) configuration variables as secrets ###
+###
+# 2.EOS Keytab
+# Note: This is specific to the EOS instance to connect to. Should be kept secret for production instances
+#
+
+# The EOS Keytab secret is currently commented out.
+# If in the need of specifing a custom keytab, proceed as follows:
+#       a. base64 encode it and copy the result in the 'eos.keytab' variable below
+#       b. uncomment what follows, from ''apiVersion: v1' to '  eos.keytab: %%% THIS IS ONLY A PLACE HOLDER %%%'
+#       c. uncomment the volumeMount and the volume definition for 'eos-keytab' in the CERNBox Backend (ownCloud) resource specification
+#       d. uncomment the env var EOS_GATEWAY_KEYTAB_FILE definition in the CERNBox Backend (ownCloud) resource specification
+#       e. repeat step c. and d. for CERNBox Gateway (nginx proxy)
+#       e. redeploy the services for the changes to take effect
+#
+##apiVersion: v1
+##kind: Secret
+##metadata:
+##  name: eos-keytab
+##  namespace: boxed
+##type: Opaque
+##data:
+##  eos.keytab: %%% THIS IS ONLY A PLACE HOLDER %%%
+#
+---
+###
+# 3.MySQL (MariaDB) configuration variables
 # Please read more here on the parameters to be configured: https://hub.docker.com/r/library/mariadb/
 #
 # Note: The MySQL user and password provided below are either randomly generated or dummy ones.
@@ -38,9 +63,6 @@ data:
 #       You can read more on how to manage user accounts on MySQL here: https://dev.mysql.com/doc/refman/5.7/en/user-account-management.html
 #       Changing the root password requires to rebuild the cernboxmysql image. Please read more at https://gitlab.cern.ch/cernbox/boxed/tree/master/cernboxmysql.d
 #
-# Note: All Kubernetes secrets must be base64 encoded. Please use `echo "YOUR_STRING" | base64 -w 0` for Linux-based systems
-#       More details available here: https://kubernetes.io/docs/concepts/configuration/secret/
-###
 apiVersion: v1
 kind: Secret
 metadata:
@@ -165,7 +187,7 @@ spec:
       subdomain: *name
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.5
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.6
         imagePullPolicy: IfNotPresent
         #ports:
         #- name: http
@@ -175,6 +197,8 @@ spec:
         volumeMounts:
         - name: &vm_cernbox-certs cernbox-certs
           mountPath: /etc/boxed/certs
+        ##- name: &vm_eos-keytab eos-keytab
+        ##  mountPath: /etc/boxed/eos_secrets
         - name: &vm_mysql-config mysql-config
           mountPath: /etc/boxed/mysql_secrets
         #- name: &vm_cbox-config cboxbackend-config
@@ -214,6 +238,22 @@ spec:
           value: "up2kube-cernbox.cern.ch"      # It has to match the name of the machine where the proxy is deployed by kubernetes!
         - name: EOS_MGM_ALIAS
           value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
+        - name: EOS_PREFIX
+          value: "/eos/docker/user/"
+        - name: EOS_METADATADIR
+          value: "/eos/docker/user/.sys.dav.hide#.user.metadata/"
+        - name: EOS_RECYCLEDIR
+          value: "/eos/docker/proc/recycle"
+        - name: EOS_PROJECTPREFIX
+          value: "/eos/docker/project/"
+        ##- name: EOS_GATEWAY_KEYTAB_FILE
+        ##  value: "/etc/boxed/eos_secrets/eos.keytab"
+        - name: EOS_GATEWAY_SELF_REGISTRATION
+          value: "true"
+        - name: EOS_GATEWAY_AUTH
+          value: "unix"
+        - name: "EOS_QUOTAADMIN_SELF_REGISTRATION"
+          value: "true"
         - name: LDAP_ENDPOINT
           value: "ldap.boxed.svc.cluster.local"
         - name: HTTPS_PORT
@@ -224,17 +264,25 @@ spec:
         - name: DATABASE_BACKEND
           #value: "sqlite"
           value: "mysql"
-        - name: CUSTOMIZATION_REPO
-          value: "https://github.com/up2university/CERNBox-customizations.git"
-        - name: CUSTOMIZATION_COMMIT
-          value: ""
-        - name: CUSTOMIZATION_SCRIPT
-          value: ""
+        #- name: CUSTOMIZATION_REPO
+        #  value: "https://github.com/up2university/CERNBox-customizations.git"
+        #- name: CUSTOMIZATION_COMMIT
+        #  value: ""
+        #- name: CUSTOMIZATION_SCRIPT
+        #  value: ""
+        lifecycle:
+          preStop:
+            exec:
+              command: ["bash", "/root/stop.sh"]
       volumes:
       - name: *vm_cernbox-certs
         secret:
           secretName: cernbox-certs
           defaultMode: 0644
+      ##- name: *vm_eos-keytab
+      ##  secret:
+      ##    secretName: eos-keytab
+      ##    defaultMode: 0400
       - name: *vm_mysql-config
         secret:
           secretName: mysql-config
@@ -279,7 +327,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.4
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.5
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -293,6 +341,8 @@ spec:
         volumeMounts:
         - name: &vm_cernbox-certs cernbox-certs
           mountPath: /etc/boxed/certs
+        ##- name: &vm_eos-keytab eos-keytab
+        ##  mountPath: /etc/boxed/eos_secrets
         - name: &vm_logs cboxgateway-logs
           mountPath: /var/log/nginx
         env:
@@ -338,6 +388,8 @@ spec:
           value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
         - name: EOS_MGM_ALIAS_PORT
           value: "8000"
+        - name: EOS_PREFIX
+          value: "/eos/docker/user/"
         - name: OWNCLOUD_BACKEND
           value: "cernbox.cernbox.boxed.svc.cluster.local"
         - name: OWNCLOUD_BACKEND_PORT
@@ -348,12 +400,12 @@ spec:
           value: "up2kube-swan.cern.ch"
         - name: SWAN_BACKEND_PORT
           value: "443"
+        ##- name: EOS_GATEWAY_KEYTAB_FILE
+        ##  value: "/etc/boxed/eos_secrets/eos.keytab"
         - name: EOS_GATEWAY_SELF_REGISTRATION
           value: "true"
         - name: EOS_GATEWAY_AUTH
           value: "https"
-        - name: EOS_MGM_ENDPOINT    # Same as EOS_MGM_ALIAS
-          value: "eos-mgm.boxed.svc.cluster.local"
         - name: ESCAPE_LANDING_PAGE
           value: "false"
         lifecycle:
@@ -365,6 +417,10 @@ spec:
         secret:
           secretName: cernbox-certs
           defaultMode: 0644
+      ##- name: *vm_eos-keytab
+      ##  secret:
+      ##    secretName: eos-keytab
+      ##    defaultMode: 0400
       - name: *vm_logs
         hostPath:
           path: /var/kubeVolumes/cboxgateway_logs
