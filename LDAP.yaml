@@ -1,68 +1,75 @@
-### POD ###
-apiVersion: v1
-kind: Pod
+### LDAP Server -- Deployment ###
+apiVersion: apps/v1beta1
+kind: Deployment
 metadata:
   name: &name ldap
   namespace: boxed
   labels:
     app: *name
 spec:
-  restartPolicy: Always
-  nodeSelector:
-    nodeApp: *name
-  containers:
-  - name: ldap
-    image: gitlab-registry.cern.ch/cernbox/boxedhub/ldap:v0
-    imagePullPolicy: IfNotPresent
-    #ports:
-    #- containerPort: 389
-    #- containerPort: 636
-    volumeMounts:
-    - name: &vm_userdb ldap-userdb
-      mountPath: /var/lib/ldap
-    - name: &vm_config ldap-config
-      mountPath: /etc/ldap/slapd.d
-    env:
-    ### PodInfo ###
-    - name: PODINFO_NAMESPACE
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.namespace
-    - name: PODINFO_NAME
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.name
-    - name: PODINFO_IP
-      valueFrom:
-        fieldRef:
-          fieldPath: status.podIP
-    - name: PODINFO_NODE_NAME
-      valueFrom:
-        fieldRef:
-          fieldPath: spec.nodeName
-    - name: PODINFO_NODE_IP
-      valueFrom:
-        fieldRef:
-          fieldPath: status.hostIP
-    ###
-    - name: THIS_CONTAINER
-      value: "LDAP"
-    - name: DEPLOYMENT_TYPE
-      value: "kubernetes"
-    - name: LDAP_ENDPOINT
-      #value: "ldap.boxed.svc.cluster.local"
-      value: "localhost"
-    - name : LDAP_TLS_VERIFY_CLIENT
-      value: "try"
-  volumes:
-  - name: *vm_userdb
-    hostPath:
-      path: /mnt/ldap/userdb
-      type: Directory
-  - name: *vm_config
-    hostPath:
-      path: /mnt/ldap/config
-      type: Directory
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: *name
+        name: *name
+    spec:
+      terminationGracePeriodSeconds: 60
+      nodeSelector:
+        nodeApp: *name
+      containers:
+      - name: ldap
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/ldap:v0.1
+        imagePullPolicy: IfNotPresent
+        #ports:
+        #- containerPort: 389
+        #- containerPort: 636
+        volumeMounts:
+        - name: &vm_userdb ldap-userdb
+          mountPath: /var/lib/ldap
+        - name: &vm_config ldap-config
+          mountPath: /etc/ldap/slapd.d
+        env:
+        ### PodInfo ###
+        - name: PODINFO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PODINFO_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PODINFO_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PODINFO_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PODINFO_NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        ###
+        - name: THIS_CONTAINER
+          value: "LDAP"
+        - name: DEPLOYMENT_TYPE
+          value: "kubernetes"
+        - name: LDAP_ENDPOINT
+          #value: "ldap.boxed.svc.cluster.local"
+          value: "localhost"
+        - name : LDAP_TLS_VERIFY_CLIENT
+          value: "try"
+      volumes:
+      - name: *vm_userdb
+        hostPath:
+          path: /mnt/ldap/userdb
+          type: Directory
+      - name: *vm_config
+        hostPath:
+          path: /mnt/ldap/config
+          type: Directory
 ---
 ### SERVICE ###
 apiVersion: v1
