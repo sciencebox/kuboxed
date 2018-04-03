@@ -274,7 +274,7 @@ spec:
         name: *daemons
     spec:
       hostPID: true
-      terminationGracePeriodSeconds: 300
+      terminationGracePeriodSeconds: 60
       nodeSelector:
         nodeApp: "swan-users"
       containers:
@@ -336,7 +336,7 @@ spec:
       ###
       # 2. CVMFS
       - name: cvmfs
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.3
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.4
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -382,7 +382,10 @@ spec:
           value: "LCG_91"
         - name: PLATFORM
           value: "x86_64-slc6-gcc62-opt"
-
+        lifecycle:
+          preStop:
+            exec:
+              command: ["bash", "/root/stop.sh"]
       ###
       # 3. Image puller
       - name: imagepuller
