@@ -8,8 +8,8 @@ SUPPORTED_NODE_TYPES=(master worker)
 
 BASIC_SOFTWARE="wget git sudo "
 
-DOCKER_VERSION="-17.03.2.ce"	# Latest by Kubernetes v1.8.0
-KUBE_VERSION="-1.8.0-0"
+DOCKER_VERSION="-17.03.2.ce"
+KUBE_VERSION="-1.9.5-0"
 
 OS_RELEASE="/etc/os-release"
 
