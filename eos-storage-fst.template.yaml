@@ -15,14 +15,14 @@ spec:
     nodeApp: *name
   containers:
   - name: eos-storage
-    image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-storage:v0.3
+    image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-storage:v0.4
     imagePullPolicy: IfNotPresent
     #ports:
     #- containerPort: 1095
     #- containerPort: 8001
     volumeMounts:
     - name: &vm_userdata fst-userdata
-      mountPath: &fst_userdata_dir /mnt/fst_userdata
+      mountPath: &fst_mountpoint /mnt/fst_userdata
     - name: &vm_logs fst-logs
       mountPath: /var/log/eos
     env:
@@ -54,14 +54,16 @@ spec:
       value: "kubernetes"
     - name: EOS_ROLE
       value: "fst"
-    - name: EOS_FST_NUMBER
-      value: "%%%FST_NUMBER%%%"
-    - name: FST_USERDATA_DIR    # Path where the FST writes data. This should be a mapped to a Docker Volume, 
-      value: *fst_userdata_dir  # an Open Stack Volume, or a bare-metal disk mountpoint to make storage persistent.
+    - name: FST_MOUNTPOINT      # Path where the FST writes data. This should be a mapped to a Docker Volume, 
+      value: *fst_mountpoint    # an Open Stack Volume, or a bare-metal disk mountpoint to make storage persistent.
     - name: EOS_MGM_ALIAS
       value: "%%%MGM_ALIAS%%%"
     - name: EOS_MQ_ALIAS
       value: "%%%MQ_ALIAS%%%"
+    - name: FST_GEOTAG
+      value: "%%%FST_GEOTAG%%%"
+    - name: FST_SCHEDULING_GROUP
+      value: "%%%FST_SCHEDULING_GROUP%%%"
     ###
     securityContext:
       privileged: true

@@ -243,7 +243,7 @@ spec:
         - name: EOS_METADATADIR
           value: "/eos/docker/user/.sys.dav.hide#.user.metadata/"
         - name: EOS_RECYCLEDIR
-          value: "/eos/docker/proc/recycle"
+          value: "/eos/docker/proc/recycle/"
         - name: EOS_PROJECTPREFIX
           value: "/eos/docker/project/"
         ##- name: EOS_GATEWAY_KEYTAB_FILE
