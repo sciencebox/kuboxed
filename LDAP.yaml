@@ -16,7 +16,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 60
       nodeSelector:
-        nodeApp: worker1
+        nodeApp: *name
       containers:
       - name: ldap
         image: gitlab-registry.cern.ch/cernbox/boxedhub/ldap:v0.1
