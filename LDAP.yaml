@@ -16,7 +16,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 60
       nodeSelector:
-        nodeApp: *name
+        nodeApp: worker1
       containers:
       - name: ldap
         image: gitlab-registry.cern.ch/cernbox/boxedhub/ldap:v0.1
@@ -61,6 +61,28 @@ spec:
           value: "localhost"
         - name : LDAP_TLS_VERIFY_CLIENT
           value: "try"
+        ##
+        # Environment variables to configure new LDAP Server
+        # NOTE: These variables are considered only at the first run of the LDAP server.
+        # * LDAP_BASE_DN is inferred from LDAP_DOMAIN, if left empty.
+        # * Admin user "admin" is created by default. Her password can be customized.
+        # * A read-only user can be added by setting "LDAP_READONLY_USER" to True
+        #   and specifing her username and password.
+        - name: LDAP_ORGANISATION
+          value: "Example Inc."
+        - name: LDAP_DOMAIN
+          value: "example.org"
+        - name: LDAP_BASE_DN
+          value: "dc=example,dc=org"
+        - name: LDAP_ADMIN_PASSWORD
+          value: "admin"
+        - name: LDAP_READONLY_USER
+          value: "true"
+        - name: LDAP_READONLY_USER_USERNAME
+          value: "readuser"
+        - name: LDAP_READONLY_USER_PASSWORD
+          value: "readuser"
+        ##
       volumes:
       - name: *vm_userdb
         hostPath:
