@@ -252,7 +252,7 @@ spec:
           value: "true"
         - name: EOS_GATEWAY_AUTH
           value: "unix"
-        - name: "EOS_QUOTAADMIN_SELF_REGISTRATION"
+        - name: EOS_QUOTAADMIN_SELF_REGISTRATION
           value: "true"
         - name: LDAP_ENDPOINT
           value: "ldap.boxed.svc.cluster.local"
