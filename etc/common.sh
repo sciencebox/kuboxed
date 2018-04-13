@@ -290,6 +290,11 @@ start_kube_masternode ()
     echo ""
     echo "Installing the Flannel pod network..."
     kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
+
+    # Restart kubelet to mak sure it picks up the extra config files
+    # NOTE: This is mission-critical for hostPort and iptables mapping on kubernetes managed containers
+    systemctl daemon-reload
+    service kubelet restart
   fi
 }
 
