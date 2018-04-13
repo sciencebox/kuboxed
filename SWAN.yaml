@@ -281,7 +281,7 @@ spec:
       ###
       # 1. EOS-FUSE
       - name: eos-fuse
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.3
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.4
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
