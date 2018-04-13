@@ -114,7 +114,7 @@ spec:
         #  containerPort: *MYSQL_PORT
         volumeMounts:
         - name: &vm_mysql-config mysql-config
-          mountPath: /run/secrets
+          mountPath: /etc/boxed/mysql_secrets
         - name: &vm_shares mysql-sharesdb
           mountPath: /var/lib/mysql
         env:
@@ -143,11 +143,11 @@ spec:
         - name: DEPLOYMENT_TYPE
           value: "kubernetes"
         - name: MYSQL_ROOT_PASSWORD_FILE
-          value: "/run/secrets/mysql_root_password"
+          value: "/etc/boxed/mysql_secrets/mysql_root_password"
         - name: MYSQL_USER_FILE
-          value: "/run/secrets/mysql_user"
+          value: "/etc/boxed/mysql_secrets/mysql_user"
         - name: MYSQL_PASSWORD_FILE
-          value: "/run/secrets/mysql_password"
+          value: "/etc/boxed/mysql_secrets/mysql_password"
         - name: MYSQL_DATABASE_NAME
           # WARNING: Do not change this value, otherwise the cernboxmysql image must be rebuilt
           # Please read more at https://gitlab.cern.ch/cernbox/boxed/tree/master/cernboxmysql.d
