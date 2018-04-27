@@ -320,8 +320,7 @@ To access CERNBox and SWAN services, please use the following user information *
 
 
 ### 2. Deployment of EOS
-*Note:* The deployment of EOS in Kubernetes will be re-implemented using StatefulSets (https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/).
-For the time being, EOS is deployed via simple Pods and requires several manual steps to be performed by the system administrator.
+EOS is deployed using Pods and requires several manual steps to be performed by the system administrator to make the network configuration and the storage persistent.
 
 
 #### a. EOS Management Server (MGM)
@@ -402,8 +401,10 @@ ALL      memory growths                   342.13 MB
 ALL      threads                          98
 ALL      uptime                           66859
 # ------------------------------------------------------------------------------------
+```
 
 Verify the nodes part of the EOS cluster:
+```
 [root@eos-mgm /]# eos node ls
 ┌──────────┬──────────────────────────────────────────────┬────────────────┬──────────┬────────────┬──────┬──────────┬────────┬────────┬────────────────┬─────┐
 │type      │                                      hostport│          geotag│    status│      status│  txgw│ gw-queued│  gw-ntx│ gw-rate│  heartbeatdelta│ nofs│
@@ -414,9 +415,7 @@ Verify the nodes part of the EOS cluster:
  nodesview  eos-fst8.eos-fst8.boxed.svc.cluster.local:1095       eos-docker     online           on    off          0       10      120                3     1 
 ```
 
-**IMPORTANT**: If it the first time you deploy EOS, please run the script `bash root/eos_setup/set_default_quota.sh` to bootsrap the file systems on FSTs.
-After this command has returned, verify the file system status with `eos fs ls`:
-
+Verify the filesystems attached to the nodes:
 ```
 [root@eos-mgm /]# eos fs ls
 ┌─────────────────────────────────────────┬────┬──────┬────────────────────────────────┬────────────────┬────────────────┬────────────┬──────────────┬────────────┬────────┬────────────────┐
@@ -428,7 +427,7 @@ After this command has returned, verify the file system status with `eos fs ls`:
  eos-fst8.eos-fst8.boxed.svc.cluster.local 1095      8                /mnt/fst_userdata        default.0       eos-docker      booting             rw      nodrain   online      no smartctl 
 ```
 
-After few seconds, the *boot* column should report `booted` and the *configstatus* one should report `rw`
+The *boot* column should report `booted` and the *configstatus* should be `rw`.
 
 
 
