@@ -35,7 +35,6 @@ data:
   boxed.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURBRENDQWVnQ0NRQ1Y4bGJrL1BOYTREQU5CZ2txaGtpRzl3MEJBUXNGQURCQ01Rc3dDUVlEVlFRR0V3SlkKV0RFVk1CTUdBMVVFQnd3TVJHVm1ZWFZzZENCRGFYUjVNUnd3R2dZRFZRUUtEQk5FWldaaGRXeDBJRU52YlhCaApibmtnVEhSa01CNFhEVEUzTURNd056RXhORFF5TjFvWERURTRNRE13TnpFeE5EUXlOMW93UWpFTE1Ba0dBMVVFCkJoTUNXRmd4RlRBVEJnTlZCQWNNREVSbFptRjFiSFFnUTJsMGVURWNNQm9HQTFVRUNnd1RSR1ZtWVhWc2RDQkQKYjIxd1lXNTVJRXgwWkRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTTV4c2RmZwptcTR6MWZVdTVtai9zNDJWV29yMkw1MmEyQUFVaDBjOXV2dmMydlpGcFJFOHBZdCsyMWNMZkJqd2I1b0xZMURLCi9wMVMyQXpEZXZvK0hGSk01a05xaHBCMXUwK2pxVGQyakRCQklIb0FIblBmMG9EN1RnM2lGdnMyWWdVK2FPQ1kKeWVQTnhGdWFnd2tROWM3V3ljc0dEL3hsU2pVSWlnMlJzYVVyTmRiOXpkRjVmOTJSZmtjL3RPYnA1NFFmam5HVApnU2VMdmlXZC9wQlpVOG1qUmJRaHNIYnV6bkdDTUxUSU5jMzJMNGpOVDYzR3lVMnZ6ZDBOeGdCaHoxd3VaWFhLCjJtb1BsVzZLcHVqdXc0dkF0Vk9RQzBYYWx6RXRaOWhHU3N5WkQ4RW9nczZPMHlFMi9MeDFoT0pxeURGazIvMWUKQWR2TE1jZGdva2FkbEM4Q0F3RUFBVEFOQmdrcWhraUc5dzBCQVFzRkFBT0NBUUVBS056ZXJyMGpwTS92NFZoNQp1Yy8vU3B2eEszWjAyeU5TV2ZYU1RUL2RuL1kwRkI4dkJxdkszdjVDV1NXa0Rnejc3WEkvSmRSZDQzcEgzVDJUCnZGMDRoSnVkUTJESGhiZER0cjBZRXdvTlY1TE9QRHhiNnhNbkMvWFRnR09EZ2ZHdGkwWVVBbisycVVNU0J6UksKMGhMeFV6Q0ZnZHEyeFZaOGl0OFVBZm1BNUc4OUlHbDEvWXUxMlhON0h4OFBOMGdyVjBQQXJ5SDZCaVhROGNUYQpjcTAzS0N1ZExhOUluQ2ZyRm9DWjRnSC9TZE50ZXpzT3NFWXA2WHlkZ0xmVlY5V1pTUVNreVFkUUNiV2duYytLCkVmUGkrRzBHTXp6KzFLQkpzbnRTOTVqdUJBVE1ualA2OWZKaUZQcGRlY2VrZ0F2OW1rVmdvYklvdVVHMjJjRW8KbWZtWnhnPT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
   boxed.csr: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ2h6Q0NBVzhDQVFBd1FqRUxNQWtHQTFVRUJoTUNXRmd4RlRBVEJnTlZCQWNNREVSbFptRjFiSFFnUTJsMAplVEVjTUJvR0ExVUVDZ3dUUkdWbVlYVnNkQ0JEYjIxd1lXNTVJRXgwWkRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCCkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU01eHNkZmdtcTR6MWZVdTVtai9zNDJWV29yMkw1MmEyQUFVaDBjOXV2dmMKMnZaRnBSRThwWXQrMjFjTGZCandiNW9MWTFESy9wMVMyQXpEZXZvK0hGSk01a05xaHBCMXUwK2pxVGQyakRCQgpJSG9BSG5QZjBvRDdUZzNpRnZzMllnVSthT0NZeWVQTnhGdWFnd2tROWM3V3ljc0dEL3hsU2pVSWlnMlJzYVVyCk5kYjl6ZEY1ZjkyUmZrYy90T2JwNTRRZmpuR1RnU2VMdmlXZC9wQlpVOG1qUmJRaHNIYnV6bkdDTUxUSU5jMzIKTDRqTlQ2M0d5VTJ2emQwTnhnQmh6MXd1WlhYSzJtb1BsVzZLcHVqdXc0dkF0Vk9RQzBYYWx6RXRaOWhHU3N5WgpEOEVvZ3M2TzB5RTIvTHgxaE9KcXlERmsyLzFlQWR2TE1jZGdva2FkbEM4Q0F3RUFBYUFBTUEwR0NTcUdTSWIzCkRRRUJDd1VBQTRJQkFRQVBzSDB0TGd6TzRjMERDd296Uzl5Y2FmTVY5QWRDYkNIdTJHL3BPdGhnaStWNkY2aTcKMURLMWRuelpXWjhFQVEwaW4wWkFtdlVIVVRsWEdGQ3B5b2hKbGtnczdpd3FRT3A3UjNiQnZhS0hxQitCMWpTZApoSjlwaElzSkFnVXFqVXE2ei9oUDV5RU40OW43YWIreWEzREp5Zm1iR2YxSmNVOC9COE5Hc0JBLzBJc0NRa2NxCmFFTFVncDFCWlg3TFpwSlFwaUVHWnBCME1DUzMvdUV0Z2EyQTJQZHEyWnlDb1NOV3d5dEFvN2lOa3JZdG4rd1AKa1lZWldCZkFjZGZNOVNQaVBnRXRmNnJzRWFBR0J4KzVicDBma0Rtbm1RUE9OZ2ZhT211UEMzZk9XRGdTMmtSQQowZnVRWFU2MjlFOEdpUEQ2QXZCemptcTc1M0VVVzZNanlUQkQKLS0tLS1FTkQgQ0VSVElGSUNBVEUgUkVRVUVTVC0tLS0tCg==
 #
-###
 
 
 ### CLUSTER ROLE BINDINGS ###
@@ -94,7 +93,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: jupyterhub
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.6
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.8
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -151,30 +150,44 @@ spec:
           value: "80"
         - name: HTTPS_PORT
           value: "443"
+        ### LDAP parameters
+        - name: LDAP_URI
+          value: "ldap://ldap.boxed.svc.cluster.local"
+        - name: LDAP_PORT
+          value: "389"
+        - name: LDAP_BASE_DN
+          value: "dc=example,dc=org"
+        - name: LDAP_BIND_DN
+          value: "cn=admin,dc=example,dc=org"
+        - name: LDAP_BIND_PASSWORD
+          value: "admin"
+        ### JupyterHub configuration
         - name: AUTH_TYPE
           value: "local"
-        - name: LDAP_ENDPOINT
-          value: "ldap.boxed.svc.cluster.local"
+          #value: "shibboleth"
         - name: CONTAINER_IMAGE
           value: "cernphsft/systemuser:v2.11"
+        ### KubeSpawner parameters
         - name: NAMESPACE
           value: *namespace
         - name: NODE_SELECTOR_KEY
           value: "nodeApp"
         - name: NODE_SELECTOR_VALUE
           value: "swan-users"
+        ### Mounts for single-user containers
         - name: CVMFS_FOLDER
           value: "/cvmfs"
         - name: EOS_FOLDER
           value: "/eos"
-        #- name: SSO_LOGOUT_URL
-        #  value: "https://swan.web.cern.ch"
+        #### Customization
         #- name: CUSTOMIZATION_REPO
         #  value: "https://<something>.git"
         #- name: CUSTOMIZATION_COMMIT
         #  value: ""
         #- name: CUSTOMIZATION_SCRIPT
         #  value: ""
+        #- name: SSO_LOGOUT_URL
+        #  value: "https://swan.web.cern.ch"
       volumes:
       - name: *vm_swan-certs
         secret:
@@ -281,7 +294,7 @@ spec:
       ###
       # 1. EOS-FUSE
       - name: eos-fuse
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.4
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.5
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -319,8 +332,18 @@ spec:
           value: "EOS-FUSE"
         - name: DEPLOYMENT_TYPE
           value: "kubernetes"
-        - name: LDAP_ENDPOINT
-          value: "ldap.boxed.svc.cluster.local"
+        ### LDAP parameters
+        - name: LDAP_URI
+          value: "ldap://ldap.boxed.svc.cluster.local"
+        - name: LDAP_PORT
+          value: "389"
+        - name: LDAP_BASE_DN
+          value: "dc=example,dc=org"
+        - name: LDAP_BIND_DN
+          value: "cn=admin,dc=example,dc=org"
+        - name: LDAP_BIND_PASSWORD
+          value: "admin"
+        ### EOS parameters
         - name: EOS_MGM_ALIAS
           value: "eos-mgm.boxed.svc.cluster.local"
         - name: EOS_FOLDER
