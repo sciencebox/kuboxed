@@ -42,7 +42,7 @@ data:
 #       c. uncomment the volumeMount and the volume definition for 'eos-keytab' in the CERNBox Backend (ownCloud) resource specification
 #       d. uncomment the env var EOS_GATEWAY_KEYTAB_FILE definition in the CERNBox Backend (ownCloud) resource specification
 #       e. repeat step c. and d. for CERNBox Gateway (nginx proxy)
-#       e. redeploy the services for the changes to take effect
+#       f. redeploy the services for the changes to take effect
 #
 ##apiVersion: v1
 ##kind: Secret
