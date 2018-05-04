@@ -330,7 +330,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.5
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.6
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -383,16 +383,24 @@ spec:
           value: "80"
         - name: HTTPS_PORT
           value: "443"
-        - name: LDAP_BACKEND1
-          value: "ldap.boxed.svc.cluster.local"
-        - name: LDAP_BACKEND2
-          value: "ldap.boxed.svc.cluster.local"
+        - name: ESCAPE_LANDING_PAGE
+          value: "false"
+        ### LDAP parameters
+        - name: LDAP_URI_1
+          value: "ldap://ldap.boxed.svc.cluster.local"
+        - name: LDAP_URI_2
+          value: "ldap://ldap.boxed.svc.cluster.local"
+        - name: LDAP_BASE_DN
+          value: "dc=example,dc=org"
+        - name: LDAP_BIND_DN
+          value: "cn=admin,dc=example,dc=org"
+        - name: LDAP_BIND_PASSWORD
+          value: "admin"
+        ### Nginx upstream servers parameters
         - name: EOS_MGM_ALIAS
           value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
         - name: EOS_MGM_ALIAS_PORT
           value: "8000"
-        - name: EOS_PREFIX
-          value: "/eos/docker/user/"
         - name: OWNCLOUD_BACKEND
           value: "cernbox.cernbox.boxed.svc.cluster.local"
         - name: OWNCLOUD_BACKEND_PORT
@@ -403,14 +411,15 @@ spec:
           value: "up2kube-swan.cern.ch"
         - name: SWAN_BACKEND_PORT
           value: "443"
+        ### EOS parameters
+        - name: EOS_PREFIX
+          value: "/eos/docker/user/"
         ##- name: EOS_GATEWAY_KEYTAB_FILE
         ##  value: "/etc/boxed/eos_secrets/eos.keytab"
         - name: EOS_GATEWAY_SELF_REGISTRATION
           value: "true"
         - name: EOS_GATEWAY_AUTH
           value: "https"
-        - name: ESCAPE_LANDING_PAGE
-          value: "false"
         lifecycle:
           preStop:
             exec:
