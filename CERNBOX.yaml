@@ -187,7 +187,7 @@ spec:
       subdomain: *name
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.7
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.8
         imagePullPolicy: IfNotPresent
         #ports:
         #- name: http
@@ -236,6 +236,30 @@ spec:
           value: "kubernetes"
         - name: CERNBOXGATEWAY_HOSTNAME         # Hostname of the proxy cernboxgateway
           value: "up2kube-cernbox.cern.ch"      # It has to match the name of the machine where the proxy is deployed by kubernetes!
+        - name: HTTPS_PORT
+          value: "443"
+        ### LDAP parameters
+        - name: LDAP_URI
+          value: "ldap://ldap.boxed.svc.cluster.local"
+        - name: LDAP_PORT
+          value: "389"
+        - name: LDAP_BASE_DN
+	  value: "dc=example,dc=org"
+        - name: LDAP_BIND_DN
+          value: "cn=readuser,dc=example,dc=org"
+        - name: LDAP_BIND_PASSWORD
+          value: "readuser"
+        # The following LDAP vars are required only when using User Backends 
+        # that need the ability to store new entries in the LDAP server
+        - name: LDAP_ADMIN_BIND_DN
+          value: "cn=admin,dc=example,dc=org"
+        - name: LDAP_ADMIN_BIND_PASSWORD
+          value: "admin"
+        - name: LDAP_ENTRY_NAME_PREFIX
+          value: "up"
+        - name: LDAP_ENTRY_UIDNUMBER_START
+          value: "1001"
+        ### EOS parameters
         - name: EOS_MGM_ALIAS
           value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
         - name: EOS_PREFIX
@@ -254,13 +278,9 @@ spec:
           value: "unix"
         - name: EOS_QUOTAADMIN_SELF_REGISTRATION
           value: "true"
-        - name: LDAP_ENDPOINT
-          value: "ldap.boxed.svc.cluster.local"
-        - name: HTTPS_PORT
-          value: "443"
+        ### Misc
         - name: AUTH_TYPE
           value: "local"
-          #value: "cernsso"
           #value: "shibboleth"
         - name: DATABASE_BACKEND
           #value: "sqlite"
