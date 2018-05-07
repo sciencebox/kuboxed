@@ -181,9 +181,9 @@ spec:
         - name: LDAP_BASE_DN
           value: "dc=example,dc=org"
         - name: LDAP_BIND_DN
-          value: "cn=admin,dc=example,dc=org"
+          value: "cn=readuser,dc=example,dc=org"
         - name: LDAP_BIND_PASSWORD
-          value: "admin"
+          value: "readuser"
         ### JupyterHub configuration
         - name: AUTH_TYPE
           value: "local"
@@ -365,9 +365,9 @@ spec:
         - name: LDAP_BASE_DN
           value: "dc=example,dc=org"
         - name: LDAP_BIND_DN
-          value: "cn=admin,dc=example,dc=org"
+          value: "cn=readuser,dc=example,dc=org"
         - name: LDAP_BIND_PASSWORD
-          value: "admin"
+          value: "readuser"
         ### EOS parameters
         - name: EOS_MGM_ALIAS
           value: "eos-mgm.boxed.svc.cluster.local"
