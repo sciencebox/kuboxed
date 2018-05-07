@@ -397,8 +397,8 @@ spec:
         #  valueFrom:                        # at the DNS (e.g., no aliases are defined)
         #    fieldRef:                       # Otherwise, please specify manually the hostname below.
         #      fieldPath: spec.nodeName
-        - name: HOSTNAME                    # Assume the gateway is exposed via hostNetwork on the node where it runs
-          value: "up2kube-cernbox.cern.ch"  # URL to reach CERNBox will be: https://<HOSTNAME>
+        - name: HOSTNAME                     # Assume the gateway is exposed via hostNetwork on the node where it runs
+          value: "up2kube-cernbox.cern.ch"   # URL to reach CERNBox will be: https://<HOSTNAME>
         - name: HTTP_PORT
           value: "80"
         - name: HTTPS_PORT
@@ -413,9 +413,9 @@ spec:
         - name: LDAP_BASE_DN
           value: "dc=example,dc=org"
         - name: LDAP_BIND_DN
-          value: "cn=admin,dc=example,dc=org"
+          value: "cn=readuser,dc=example,dc=org"
         - name: LDAP_BIND_PASSWORD
-          value: "admin"
+          value: "readuser"
         ### Nginx upstream servers parameters
         - name: EOS_MGM_ALIAS
           value: "eos-mgm.eos-mgm.boxed.svc.cluster.local"
