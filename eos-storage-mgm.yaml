@@ -15,7 +15,7 @@ spec:
     nodeApp: *name
   containers:
   - name: eos-storage
-    image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-storage:v0.5
+    image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-storage:v0.6
     imagePullPolicy: IfNotPresent
     #ports:
     #- containerPort: 1094
@@ -53,6 +53,18 @@ spec:
       value: "EOS-MGM"
     - name: DEPLOYMENT_TYPE
       value: "kubernetes"
+    ### LDAP parameters
+    - name: LDAP_URI
+      value: "ldap://ldap.boxed.svc.cluster.local"
+    - name: LDAP_PORT
+      value: "389"
+    - name: LDAP_BASE_DN
+      value: "dc=example,dc=org"
+    - name: LDAP_BIND_DN
+      value: "cn=readuser,dc=example,dc=org"
+    - name: LDAP_BIND_PASSWORD
+      value: "readuser"
+    ### EOS parameters
     - name: EOS_ROLE
       value: "mgm"
     - name: EOS_MGM_MASTER1
@@ -70,8 +82,6 @@ spec:
       value: "/eos/docker/user/.sys.dav.hide#.user.metadata/"
     - name: EOS_RECYCLEDIR
       value: "/eos/docker/proc/recycle/"
-    - name: LDAP_ENDPOINT
-      value: "ldap.boxed.svc.cluster.local"
     securityContext:
       #privileged: true
       capabilities:
