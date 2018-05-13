@@ -386,7 +386,7 @@ spec:
       ###
       # 2. CVMFS
       - name: cvmfs
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.4
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.5
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -425,9 +425,13 @@ spec:
         - name: CVMFS_FOLDER
           value: "/cvmfs"
         - name: CVMFS_UPSTREAM_CONNECTION
+          #value: "direct"
+          #value" "cern"
           value: "squid"
-        - name: CVMFS_SQUID_ENDPOINT
-          value: "http://cvmfssquid.boxed.svc.cluster.local:3128"
+        - name: CVMFS_SQUID_HOSTNAME
+          value: "cvmfssquid.boxed.svc.cluster.local"
+        - name: CVMFS_SQUID_PORT
+          value: "3128"
         - name: SOFTWARE_STACK
           value: "LCG_91"
         - name: PLATFORM
