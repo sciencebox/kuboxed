@@ -201,12 +201,8 @@ spec:
         ##  mountPath: /etc/boxed/eos_secrets
         - name: &vm_mysql-config mysql-config
           mountPath: /etc/boxed/mysql_secrets
-        #- name: &vm_cbox-config cboxbackend-config
-        #  mountPath: /var/www/html/cernbox/config
         - name: &vm_cbox-data cboxbackend-data
           mountPath: /var/www/html/cernbox/data
-        - name: &vm_cbox-config cboxbackend-config
-          mountPath: /var/www/html/cernbox/config
         - name: &vm_logs-httpd httpd-logs
           mountPath: /var/log/httpd
         - name: &vm_logs-shibboleth shibboleth-logs
@@ -317,10 +313,6 @@ spec:
       - name: *vm_cbox-data
         hostPath:
           path: /mnt/cbox_shares_db/cbox_data
-          type: Directory
-      - name: *vm_cbox-config
-        hostPath:
-          path: /mnt/cbox_shares_db/cbox_config
           type: Directory
       - name: *vm_logs-httpd
         hostPath:
