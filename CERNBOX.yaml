@@ -287,6 +287,8 @@ spec:
         - name: DATABASE_BACKEND
           #value: "sqlite"
           value: "mysql"
+        - name: ADMINS_LIST
+          value: ""	# Whitespace-separated list of users with administrator privileges
         #- name: SSO_LOGOUT_URL
         #  value: "https://cernbox.web.cern.ch"
         #- name: CUSTOMIZATION_REPO
