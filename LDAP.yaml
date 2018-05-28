@@ -16,7 +16,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 60
       nodeSelector:
-        nodeApp: *name
+        nodeApp: eos-mgm
       containers:
       - name: ldap
         image: gitlab-registry.cern.ch/cernbox/boxedhub/ldap:v0.2
@@ -82,6 +82,15 @@ spec:
           value: "readuser"
         - name: LDAP_READONLY_USER_PASSWORD
           value: "readuser"
+        # Variables needed by the `adduser.sh` script
+        - name: LDAP_URI
+          value: "ldap://127.0.0.1"
+        - name: LDAP_PORT
+          value: "389"
+        - name: LDAP_ADMIN_BIND_DN
+          value: "cn=admin,dc=example,dc=org"
+        - name: LDAP_ADMIN_BIND_PASSWORD
+          value: "admin"
         ##
       volumes:
       - name: *vm_userdb
