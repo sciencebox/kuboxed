@@ -242,7 +242,7 @@ spec:
         - name: LDAP_PORT
           value: "389"
         - name: LDAP_BASE_DN
-	  value: "dc=example,dc=org"
+          value: "dc=example,dc=org"
         - name: LDAP_BIND_DN
           value: "cn=readuser,dc=example,dc=org"
         - name: LDAP_BIND_PASSWORD
