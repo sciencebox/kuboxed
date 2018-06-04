@@ -116,7 +116,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: jupyterhub
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.7
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.8
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -200,8 +200,8 @@ spec:
         ### Mounts for single-user containers
         - name: CVMFS_FOLDER
           value: "/cvmfs"
-        - name: EOS_FOLDER
-          value: "/eos"
+        - name: EOS_USER_PATH           # This must bring to the folder with the list of initials of users
+          value: "/eos/docker/user"     # E.g., "/eos/docker/user" --(will be mapped to)--> "/eos/user" in the container
         #### Customization
         #- name: CUSTOMIZATION_REPO
         #  value: "https://<something>.git"
