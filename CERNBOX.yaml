@@ -287,6 +287,7 @@ spec:
           value: ""	# Whitespace-separated list of users with administrator privileges
         #- name: SSO_LOGOUT_URL
         #  value: "https://cernbox.web.cern.ch"
+        ### Customization
         #- name: CUSTOMIZATION_REPO
         #  value: "https://<something>.git"
         #- name: CUSTOMIZATION_COMMIT
