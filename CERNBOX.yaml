@@ -441,6 +441,13 @@ spec:
           value: "true"
         - name: EOS_GATEWAY_AUTH
           value: "https"
+        ### Customization
+        #- name: CUSTOMIZATION_REPO
+        #  value: "https://<something>.git"
+        #- name: CUSTOMIZATION_COMMIT
+        #  value: ""
+        #- name: CUSTOMIZATION_SCRIPT
+        #  value: ""
         lifecycle:
           preStop:
             exec:
