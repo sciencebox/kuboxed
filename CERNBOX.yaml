@@ -399,12 +399,14 @@ spec:
         #    fieldRef:                       # Otherwise, please specify manually the hostname below.
         #      fieldPath: spec.nodeName
         - name: HOSTNAME                     # Assume the gateway is exposed via hostNetwork on the node where it runs
-          value: "up2kube-cernbox.cern.ch"   # URL to reach CERNBox will be: https://<HOSTNAME>
+          value: "up2kube-cernbox.cern.ch"   # URL to reach the landing page will be: https://<HOSTNAME>
         - name: HTTP_PORT
           value: "80"
         - name: HTTPS_PORT
           value: "443"
-        - name: ESCAPE_LANDING_PAGE
+        #- name: CERNBOX_SUBDOMAIN                   # If the DNS config allows, configure a subdomain to directly access CERNBox
+        #  value: "cernbox.up2kube-cernbox.cern.ch"  # The Web UI will be reachable at https://<CERNBOX_SUBDOMAIN> and at https://<HOSTNAME>/cernbox
+        - name: ESCAPE_LANDING_PAGE          # Force a redirect to https://<HOSTNAME>/cernbox
           value: "false"
         ### LDAP parameters
         - name: LDAP_URI_1
