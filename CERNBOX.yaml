@@ -285,6 +285,8 @@ spec:
           value: "mysql"
         - name: MYSQL_URI
           value: "cernboxmysql.boxed.svc.cluster.local"
+        - name: MYSQL_DB
+          value: "cernbox"
         - name: MYSQL_PORT
           value: "3306"
         - name: ADMINS_LIST
