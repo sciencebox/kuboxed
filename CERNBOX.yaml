@@ -105,7 +105,7 @@ spec:
         nodeApp: cernbox
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxmysql:webng
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxmysql:webng_beta_psnc
         imagePullPolicy: IfNotPresent
         #ports:
         #- name: http
@@ -187,7 +187,7 @@ spec:
       subdomain: *name
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:webng
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:webng_beta_psnc
         imagePullPolicy: IfNotPresent
         #ports:
         #- name: http
@@ -373,7 +373,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:webng
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:webng_beta_psnc
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
