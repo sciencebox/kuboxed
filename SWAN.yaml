@@ -116,7 +116,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: jupyterhub
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.9
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:update_sciencebox
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
