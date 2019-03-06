@@ -433,9 +433,9 @@ spec:
         - name: CVMFS_SQUID_PORT
           value: "3128"
         - name: SOFTWARE_STACK
-          value: "LCG_91"
+          value: "LCG_94"
         - name: PLATFORM
-          value: "x86_64-slc6-gcc62-opt"
+          value: "x86_64-centos7-gcc7-opt"
         lifecycle:
           preStop:
             exec:
