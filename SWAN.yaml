@@ -189,7 +189,7 @@ spec:
           value: "local"
           #value: "shibboleth"
         - name: CONTAINER_IMAGE
-          value: "cernphsft/systemuser:v2.11"
+          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:daily"
         ### KubeSpawner parameters
         - name: NAMESPACE
           value: *namespace
@@ -476,7 +476,7 @@ spec:
         - name: DAEMON_SET
           value: "true"
         - name: DOCKER_IMAGES
-          value: "cernphsft/systemuser:v2.11"
+          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:daily"
 
       volumes:
       # EOS-FUSE
