@@ -202,6 +202,8 @@ spec:
           value: "/cvmfs"
         - name: EOS_USER_PATH           # This must bring to the folder with the list of initials of users
           value: "/eos/docker/user"     # E.g., "/eos/docker/user" --(will be mapped to)--> "/eos/user" in the container
+        - name: CERNBOXGATEWAY_HOSTNAME     # Hostname of CERNBox for Sharing API
+          value: "up2kube-cernbox.cern.ch"
         #### Customization
         #- name: CUSTOMIZATION_REPO
         #  value: "https://<something>.git"
