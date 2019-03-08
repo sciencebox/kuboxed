@@ -204,6 +204,8 @@ spec:
           value: "/eos/docker/user"     # E.g., "/eos/docker/user" --(will be mapped to)--> "/eos/user" in the container
         - name: CERNBOXGATEWAY_HOSTNAME     # Hostname of CERNBox for Sharing API
           value: "up2kube-cernbox.cern.ch"
+        # - name: SPAWNER_FORM
+        #   value: "simple"
         #### Customization
         #- name: CUSTOMIZATION_REPO
         #  value: "https://<something>.git"
