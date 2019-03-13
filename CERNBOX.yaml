@@ -459,6 +459,8 @@ spec:
         ### EOS parameters
         - name: EOS_PREFIX
           value: "/eos/docker/user/"
+        - name: EOS_BASE
+          value: "/eos/docker/"
         ##- name: EOS_GATEWAY_KEYTAB_FILE
         ##  value: "/etc/boxed/eos_secrets/eos.keytab"
         - name: EOS_GATEWAY_SELF_REGISTRATION
