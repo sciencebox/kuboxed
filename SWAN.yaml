@@ -116,7 +116,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: jupyterhub
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:update_sciencebox
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v1.0
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -189,7 +189,7 @@ spec:
           value: "local"
           #value: "shibboleth"
         - name: CONTAINER_IMAGE
-          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:daily"
+          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.0.0"
         ### KubeSpawner parameters
         - name: NAMESPACE
           value: *namespace
@@ -480,7 +480,7 @@ spec:
         - name: DAEMON_SET
           value: "true"
         - name: DOCKER_IMAGES
-          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:daily"
+          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.0.0"
 
       volumes:
       # EOS-FUSE
