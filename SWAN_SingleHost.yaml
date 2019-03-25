@@ -62,7 +62,7 @@ spec:
       ###
       # 1. Fuse mount for EOS
       - name: eos-fuse
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.1
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.7
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
