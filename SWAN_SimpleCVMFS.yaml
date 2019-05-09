@@ -81,7 +81,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: jupyterhub
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.4
+        image: gitlab-registry.cern.ch/swan/docker-images/jupyterhub:v1.4
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -211,7 +211,7 @@ spec:
       ###
       # 1. EOS-FUSE
       - name: eos-fuse
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.2
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.8
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -266,7 +266,7 @@ spec:
       ###
       # 2. CVMFS
       - name: cvmfs
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.2
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.5
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -340,7 +340,7 @@ spec:
         - name: DAEMON_SET
           value: "true"
         - name: DOCKER_IMAGES
-          value: "cernphsft/systemuser:v2.11"
+          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.0.2"
 
       volumes:
       # EOS-FUSE
