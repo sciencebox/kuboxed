@@ -21,6 +21,7 @@ check_kube_node_type
 check_host_os_type
 install_basics
 install_docker
+install_gpu_software
 install_kubernetes
 configure_iptables
 set_kubelet_cgroup_driver
