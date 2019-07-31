@@ -116,7 +116,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: jupyterhub
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.9
+        image: gitlab-registry.cern.ch/swan/docker-images/jupyterhub:v1.8
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -189,7 +189,7 @@ spec:
           value: "local"
           #value: "shibboleth"
         - name: CONTAINER_IMAGE
-          value: "cernphsft/systemuser:v2.11"
+          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.1.1"
         ### KubeSpawner parameters
         - name: NAMESPACE
           value: *namespace
@@ -202,6 +202,10 @@ spec:
           value: "/cvmfs"
         - name: EOS_USER_PATH           # This must bring to the folder with the list of initials of users
           value: "/eos/docker/user"     # E.g., "/eos/docker/user" --(will be mapped to)--> "/eos/user" in the container
+        - name: CERNBOXGATEWAY_HOSTNAME     # Hostname of CERNBox for Sharing API
+          value: "up2kube-cernbox.cern.ch"
+        # - name: SPAWNER_FORM
+        #   value: "simple"
         #### Customization
         #- name: CUSTOMIZATION_REPO
         #  value: "https://<something>.git"
@@ -317,7 +321,7 @@ spec:
       ###
       # 1. EOS-FUSE
       - name: eos-fuse
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.6
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.8
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -433,9 +437,9 @@ spec:
         - name: CVMFS_SQUID_PORT
           value: "3128"
         - name: SOFTWARE_STACK
-          value: "LCG_91"
+          value: "LCG_96"
         - name: PLATFORM
-          value: "x86_64-slc6-gcc62-opt"
+          value: "x86_64-centos7-gcc8-opt"
         lifecycle:
           preStop:
             exec:
@@ -476,7 +480,7 @@ spec:
         - name: DAEMON_SET
           value: "true"
         - name: DOCKER_IMAGES
-          value: "cernphsft/systemuser:v2.11"
+          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.1.1"
 
       volumes:
       # EOS-FUSE

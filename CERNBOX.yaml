@@ -105,7 +105,7 @@ spec:
         nodeApp: cernbox
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxmysql:v0.5
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxmysql:v1.0
         imagePullPolicy: IfNotPresent
         #ports:
         #- name: http
@@ -187,7 +187,7 @@ spec:
       subdomain: *name
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v0.9
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v1.2
         imagePullPolicy: IfNotPresent
         #ports:
         #- name: http
@@ -283,8 +283,30 @@ spec:
         - name: DATABASE_BACKEND
           #value: "sqlite"
           value: "mysql"
+        - name: MYSQL_URI
+          value: "cernboxmysql.boxed.svc.cluster.local"
+        - name: MYSQL_DB
+          value: "cernbox"
+        - name: MYSQL_PORT
+          value: "3306"
         - name: ADMINS_LIST
           value: ""	# Whitespace-separated list of users with administrator privileges
+        - name: INSTANCEID
+          value: "oc1234"
+        - name: CBOXGROUPD_SECRET
+          value: "1234"
+        - name: CBOXSWANAPID_SECRET
+          value: "1234"
+        - name: CBOXSWANAPID_SIGNKEY
+          value: "1234"
+        - name: JWTKEY
+          value: "1234"
+        - name: WOPI_SECRET
+          value: "1234"
+        - name: REVA_USERNAME
+          value: "1234"
+        - name: REVA_PASSWORD
+          value: "1234"
         #- name: SSO_LOGOUT_URL
         #  value: "https://cernbox.web.cern.ch"
         ### Customization
@@ -351,7 +373,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v0.8
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v1.0
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -437,6 +459,8 @@ spec:
         ### EOS parameters
         - name: EOS_PREFIX
           value: "/eos/docker/user/"
+        - name: EOS_BASE
+          value: "/eos/docker/"
         ##- name: EOS_GATEWAY_KEYTAB_FILE
         ##  value: "/etc/boxed/eos_secrets/eos.keytab"
         - name: EOS_GATEWAY_SELF_REGISTRATION

@@ -62,7 +62,7 @@ spec:
       ###
       # 1. Fuse mount for EOS
       - name: eos-fuse
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.1
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/eos-fuse:v0.8
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -119,7 +119,7 @@ spec:
       ###
       # 2. CVMFS (and squid proxy) for ROOT
       - name: cvmfs
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.1
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cvmfs:v0.5
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -164,7 +164,7 @@ spec:
       ###
       # 3. JupyterHub
       - name: jupyterhub
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/jupyterhub:v0.3
+        image: gitlab-registry.cern.ch/swan/docker-images/jupyterhub:v1.8
         imagePullPolicy: IfNotPresent
        #securityContext:
         #  capabilities:
@@ -233,13 +233,20 @@ spec:
         - name: LDAP_ENDPOINT
           value: "ldap.boxed.svc.cluster.local"
         - name: CONTAINER_IMAGE
-          value: "cernphsft/systemuser:v2.10"
+          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.1.1"
         - name: DOCKER_NETWORK_NAME
           value: "jupyternet"
         - name: CVMFS_FOLDER
           value: "/cvmfs"
-        - name: EOS_FOLDER
-          value: "/eos"
+        - name: EOS_USER_PATH           # This must bring to the folder with the list of initials of users
+          value: "/eos/docker/user"     # E.g., "/eos/docker/user" --(will be mapped to)--> "/eos/user" in the container
+        - name: CERNBOXGATEWAY_HOSTNAME     # Hostname of CERNBox for Sharing API
+          value: "up2kube-cernbox.cern.ch"
+        # - name: SPAWNER_FORM
+        #   value: "simple"
+        #### Customization
+        #- name: CUSTOMIZATION_REPO
+        #  value: "https://<something>.git"
 
       # Volumes declaration
       volumes:
