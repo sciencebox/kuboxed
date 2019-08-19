@@ -59,6 +59,12 @@ data:
 ##  eos.keytab: %%% THIS IS ONLY A PLACE HOLDER %%%
 #
 
+---
+### NAMESPACE FOR SWAN USERS ###
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: boxed-users
 
 ### CLUSTER ROLE BINDINGS ###
 #
@@ -192,7 +198,7 @@ spec:
           value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.1.1"
         ### KubeSpawner parameters
         - name: NAMESPACE
-          value: *namespace
+          value: "boxed-users"
         - name: NODE_SELECTOR_KEY
           value: "nodeApp"
         - name: NODE_SELECTOR_VALUE
