@@ -276,6 +276,11 @@ spec:
           value: "unix"
         - name: EOS_QUOTAADMIN_SELF_REGISTRATION
           value: "true"
+        ### Default quota for new users
+        - name: USER_QUOTA_VOLUME
+          value: "20GB"
+        - name: USER_QUOTA_INODES
+          value: "1M"
         ### Misc
         - name: AUTH_TYPE
           value: "local"
