@@ -8,8 +8,9 @@ SUPPORTED_NODE_TYPES=(master worker)
 
 BASIC_SOFTWARE="wget git sudo "
 
-DOCKER_VERSION="-17.03.2.ce"
-KUBE_VERSION="-1.9.5-0"
+DOCKER_VERSION="-18.09.9-3.el7"
+KUBE_VERSION="-1.16.2-0"
+
 
 OS_RELEASE="/etc/os-release"
 
@@ -190,7 +191,8 @@ install_docker()
     # See dependency issue: https://github.com/moby/moby/issues/33930
     yum install -y --setopt=obsoletes=0 \
       docker-ce${DOCKER_VERSION} \
-      docker-ce-selinux${DOCKER_VERSION}
+      docker-ce-cli${DOCKER_VERSION} \
+      containerd.io
     systemctl enable docker && systemctl start docker
     systemctl status docker
 
