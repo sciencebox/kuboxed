@@ -19,11 +19,13 @@ export HOST_OS="centos7"
 need_root
 check_kube_node_type
 check_host_os_type
+docker_warning_message
 install_basics
 install_docker
 install_gpu_software
+configure_docker
 install_kubernetes
 configure_iptables
-set_kubelet_cgroup_driver
+#set_kubelet_cgroup_driver
 start_kube_masternode	# Depends on KUBE_NODE_TYPE
 

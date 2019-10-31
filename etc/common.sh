@@ -7,22 +7,19 @@ SUPPORTED_HOST_OS=(centos7)
 SUPPORTED_NODE_TYPES=(master worker)
 
 BASIC_SOFTWARE="wget git sudo epel-release"
-DOCKER_VERSION="-18.06.3.ce-3.el7"
-KUBE_VERSION="-1.10.11-0" # Required for GPU https://docs.nvidia.com/datacenter/kubernetes/kubernetes-install-guide/index.html#kubernetes-supported-platforms
-KUBE_CNI_VERSION="-0.6.0" 
+
+
+# Versions
+DOCKER_VERSION="-18.09.9-3.el7"
+KUBE_VERSION="-1.16.2-0" 
 
 NVIDIA_DOCKER_VERSION="2.1.0"  
 LIBNVIDIA_CONTAINER_VERSION="1.0.2"
 NVIDIA_CONTAINER_RUNTIME_VERSION="3.0.0"
 NVIDIA_CONTAINER_RUNTIME_HOOK_VERSION="1.4.0"
 
+
 OS_RELEASE="/etc/os-release"
-
-# Versions
-
-
-
-
 
 
 
@@ -123,6 +120,23 @@ check_host_os_type ()
 
 
 
+# Docker needs custom configuration with recent versions of K8s
+docker_warning_message ()
+{
+  echo "WARNING: The installation will modify the Docker configuration by replacing the file at '/etc/docker/daemon.json'"
+  echo "  If a custom configuration is already in place, backup your file before continuing."
+  read -r -p "  Do you want to proceed with the software installation [y/N] " response
+  case "$response" in
+    [yY])
+    ;;
+    *)
+      exit -1
+    ;;
+  esac
+}
+
+
+
 # Configure iptables to make the master reachable on TCP 6443 and TCP 10250
 configure_iptables ()
 {
@@ -176,7 +190,7 @@ configure_iptables ()
 
 
 # Install the basic software
-install_basics()
+install_basics ()
 {
   echo ""
   echo "Installing the basics..."
@@ -194,7 +208,7 @@ install_basics()
 
 
 # Install Docker
-install_docker()
+install_docker ()
 {
   echo ""
   echo "Installing Docker..." 
@@ -209,7 +223,8 @@ install_docker()
     # See dependency issue: https://github.com/moby/moby/issues/33930
     yum install -y --setopt=obsoletes=0 \
       docker-ce${DOCKER_VERSION} \
-      docker-ce-selinux${DOCKER_VERSION}
+      docker-ce-cli${DOCKER_VERSION} \
+      containerd.io
     systemctl enable docker && systemctl start docker
     systemctl status docker
 
@@ -221,6 +236,48 @@ install_docker()
     echo "Unknown OS. Cannot continue."
     exit 1
   fi
+}
+
+
+
+# Deploy Docker custom configuration with recent versions of K8s
+configure_docker ()
+{
+  local sleep_time=10
+  local source_daemon_file='/etc/docker/daemon.json'
+  local backup_daemon_file='/etc/docker/daemon.json.backup'
+
+  echo "Configuring Docker daemon"
+  if [ -f $source_daemon_file ]; then
+    echo "Custom configuration found at $source_daemon_file"
+    if [ ! -f $backup_daemon_file ]; then
+      echo "Backing it up to $backup_daemon_file"
+      cp $source_daemon_file $backup_daemon_file
+    else
+      echo "Backup found at $backup_daemon_file. Not backing up any further."
+      echo ""
+      echo "Docker configuration at $source_daemon_file will be overwritten."
+      echo "ABORT NOW if in doubt ($sleep_time secs sleep)"
+      sleep $sleep_time
+    fi
+  fi
+
+  cat <<EOF > $source_daemon_file
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ]
+}
+EOF
+  systemctl daemon-reload
+  systemctl restart docker
+  systemctl status docker
 }
 
 
@@ -351,7 +408,7 @@ start_kube_masternode ()
     # Use the Flannel pod network
     echo ""
     echo "Installing the Flannel pod network..."
-    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
+    kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
     echo ""
     echo "Installing the NVidia k8s-device-plugin..."

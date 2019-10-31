@@ -187,7 +187,7 @@ spec:
       subdomain: *name
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v1.1
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernbox:v1.3
         imagePullPolicy: IfNotPresent
         #ports:
         #- name: http
@@ -276,6 +276,11 @@ spec:
           value: "unix"
         - name: EOS_QUOTAADMIN_SELF_REGISTRATION
           value: "true"
+        ### Default quota for new users
+        - name: USER_QUOTA_VOLUME
+          value: "20GB"
+        - name: USER_QUOTA_INODES
+          value: "1M"
         ### Misc
         - name: AUTH_TYPE
           value: "local"
@@ -373,7 +378,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: *name
-        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v1.0
+        image: gitlab-registry.cern.ch/cernbox/boxedhub/cernboxgateway:v1.1
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
