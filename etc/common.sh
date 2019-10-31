@@ -412,7 +412,7 @@ start_kube_masternode ()
 
     echo ""
     echo "Installing the NVidia k8s-device-plugin..."
-    kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/1.0.0-beta/nvidia-device-plugin.yml
+    kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/1.0.0-beta4/nvidia-device-plugin.yml
 
     # Restart kubelet to mak sure it picks up the extra config files
     # NOTE: This is mission-critical for hostPort and iptables mapping on kubernetes managed containers
