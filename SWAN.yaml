@@ -94,7 +94,7 @@ subjects:
 ### PODS ###
 ---
 # Jupyterhub -- Deployment
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: &name swan
@@ -103,6 +103,9 @@ metadata:
     app: *name
 spec:
   replicas: 1 
+  selector:
+    matchLabels:
+      app: *name
   template:
     metadata:
       labels:
@@ -239,7 +242,7 @@ spec:
 
 ---
 # SQUID Proxy for CVMFS -- Deployment
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: &name cvmfssquid
@@ -248,6 +251,9 @@ metadata:
     app: *name
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: *name
   template:
     metadata:
       labels:
@@ -299,7 +305,7 @@ spec:
 #       This image is usually 3GB+ in size and, if not already
 #       available locally, would require several minutes to download.
 #
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1 #https://kubernetes.io/blog/2019/07/18/api-deprecations-in-1-16/
 kind: DaemonSet
 metadata:
   name: &daemons swan-daemons
@@ -307,6 +313,9 @@ metadata:
   labels:
     app: *daemons
 spec:
+  selector:
+    matchLabels:
+      app: *daemons
   template:
     metadata:
       labels:

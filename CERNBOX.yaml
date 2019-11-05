@@ -83,7 +83,7 @@ data:
 ### PODS ###
 ---
 # MySQL -- Deployment
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: &name cernboxmysql
@@ -92,6 +92,9 @@ metadata:
     app: *name
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: *name
   template:
     metadata:
       labels:
@@ -164,7 +167,7 @@ spec:
 
 ---
 # CERNBox Backend (ownCloud) -- Deployment
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: &name cernbox
@@ -173,6 +176,9 @@ metadata:
     app: *name
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: *name
   template:
     metadata:
       labels:
@@ -353,7 +359,7 @@ spec:
 
 ---
 # CERNBox Gateway (nginx proxy) -- Deployment
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: &name cernboxgateway
@@ -362,6 +368,9 @@ metadata:
     app: *name
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: *name
   template:
     metadata:
       labels:
