@@ -19,7 +19,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: 60
       nodeSelector:
-        nodeApp: eos-mgm
+        nodeApp: *name
       containers:
       - name: ldap
         image: gitlab-registry.cern.ch/cernbox/boxedhub/ldap:v0.2
