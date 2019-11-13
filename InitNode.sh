@@ -22,6 +22,7 @@ check_host_os_type
 docker_warning_message
 install_basics
 install_docker
+install_gpu_software
 configure_docker
 install_kubernetes
 configure_iptables

@@ -6,10 +6,17 @@
 SUPPORTED_HOST_OS=(centos7)
 SUPPORTED_NODE_TYPES=(master worker)
 
-BASIC_SOFTWARE="wget git sudo "
+BASIC_SOFTWARE="wget git sudo epel-release"
 
+
+# Versions
 DOCKER_VERSION="-18.09.9-3.el7"
-KUBE_VERSION="-1.16.2-0"
+KUBE_VERSION="-1.16.2-0" 
+
+NVIDIA_DOCKER_VERSION="2.1.0"  
+LIBNVIDIA_CONTAINER_VERSION="1.0.2"
+NVIDIA_CONTAINER_RUNTIME_VERSION="3.0.0"
+NVIDIA_CONTAINER_RUNTIME_HOOK_VERSION="1.4.0"
 
 
 OS_RELEASE="/etc/os-release"
@@ -43,6 +50,20 @@ detect_os ()
   # TODO: not used
   source $OS_RELEASE
   echo $ID$VERSION_ID
+}
+
+# Print a warning about the required software on the host for GPU
+function warn_about_gpu_software_requirements {
+echo ""
+echo "The following software will be installed or updated for GPU support:"
+echo -e "\t- jq"
+echo -e "\t- runc"
+echo -e "\t- moreutils"
+echo -e "\t- nvidia-docker2"
+echo -e "\t- nvidia-container-runtime"
+echo -e "\t- libnvidia-container1"
+echo -e "\t- libnvidia-container-tools"
+echo -e "\t- nvidia-container-runtime-hook"
 }
 
 
@@ -283,7 +304,9 @@ EOF
     yum install -y \
       kubelet${KUBE_VERSION} \
       kubeadm${KUBE_VERSION} \
-      kubectl${KUBE_VERSION}
+      kubectl${KUBE_VERSION} \
+      kubernetes-cni${KUBE_CNI_VERSION}
+    
     systemctl enable kubelet && systemctl start kubelet
     systemctl status kubelet
 
@@ -302,8 +325,49 @@ EOF
   fi
 }
 
+# ----- Install the required gpu software on the host ----- #
+install_gpu_software_base()
+{
+  echo "Installing nvidia-docker2..."
+  yum install -y epel-release
+  yum install -y moreutils runc jq  
+  yum install -y https://nvidia.github.io/nvidia-container-runtime/centos7/x86_64/nvidia-container-runtime-"$NVIDIA_CONTAINER_RUNTIME_VERSION"-1.x86_64.rpm \
+                 https://nvidia.github.io/libnvidia-container/centos7/x86_64/libnvidia-container1-"$LIBNVIDIA_CONTAINER_VERSION"-1.x86_64.rpm \
+                 https://nvidia.github.io/libnvidia-container/centos7/x86_64/libnvidia-container-tools-"$LIBNVIDIA_CONTAINER_VERSION"-1.x86_64.rpm \
+                 https://nvidia.github.io/nvidia-container-runtime/centos7/x86_64/nvidia-container-runtime-hook-"$NVIDIA_CONTAINER_RUNTIME_HOOK_VERSION"-2.x86_64.rpm \
+                 https://nvidia.github.io/nvidia-docker/centos7/x86_64/nvidia-docker2-"$NVIDIA_DOCKER_VERSION"-1.noarch.rpm 
+ 
+  #Setting up default runtime nvidia (required for kubernetes) https://github.com/NVIDIA/k8s-device-plugin#prerequisites 
 
+  jq   '{"default-runtime": "nvidia"} + .' /etc/docker/daemon.json  | sponge /etc/docker/daemon.json
 
+  echo "Restarting docker daemon with NVidia runtime..."
+  service docker restart
+
+  echo "Checking NVidia driver"
+  check_nvidia_driver
+}
+
+install_gpu_software()
+{
+  if [[ "$KUBE_NODE_TYPE" == "worker" ]]; then  #GPU should be only in the worker nodes
+
+    # Raise warning about GPU software installation (docker-ce should be installed)
+    warn_about_gpu_software_requirements
+
+    echo ""
+    read -r -p "Do you want to proceed with the gpu software installation [y/N] " response
+    case "$response" in
+      [yY]) 
+        echo "Installing required gpu software..."
+        install_gpu_software_base
+      ;;
+      *)
+        echo "Continuing without GPU support"
+      ;;
+    esac
+  fi
+}
 # Configure kubelet with the cgroup driver used by docker
 set_kubelet_cgroup_driver ()
 {
@@ -346,6 +410,10 @@ start_kube_masternode ()
     echo "Installing the Flannel pod network..."
     kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
+    echo ""
+    echo "Installing the NVidia k8s-device-plugin..."
+    kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/1.0.0-beta4/nvidia-device-plugin.yml
+
     # Restart kubelet to mak sure it picks up the extra config files
     # NOTE: This is mission-critical for hostPort and iptables mapping on kubernetes managed containers
     systemctl daemon-reload
@@ -353,4 +421,19 @@ start_kube_masternode ()
   fi
 }
 
+### Check Nvidia kernel driver
+check_nvidia_driver()
+{
+    echo "Checking if the kernel driver is loaded "
+    if lsmod | grep "nvidia" &> /dev/null ; then
+      echo "==========================================================="
+      echo "NVidia kernel driver is loaded!"
+      echo "==========================================================="
+    else
+      echo "==========================================================="
+      echo "WARNING: NVidia kernel driver is not loaded!"
+      echo "GPU support will not work, configure your GPU driver first."
+      echo "==========================================================="
+    fi
+}
 
