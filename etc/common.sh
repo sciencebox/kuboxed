@@ -9,7 +9,8 @@ SUPPORTED_NODE_TYPES=(master worker)
 BASIC_SOFTWARE="wget git sudo "
 
 DOCKER_VERSION="-18.09.9-3.el7"
-KUBE_VERSION="-1.16.2-0"
+#KUBE_VERSION="-1.16.2-0"
+KUBE_VERSION="-1.14.9"
 
 
 OS_RELEASE="/etc/os-release"
