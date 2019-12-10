@@ -164,7 +164,7 @@ spec:
       ###
       # 3. JupyterHub
       - name: jupyterhub
-        image: gitlab-registry.cern.ch/swan/docker-images/jupyterhub:v1.8
+        image: gitlab-registry.cern.ch/swan/docker-images/jupyterhub:v1.9
         imagePullPolicy: IfNotPresent
        #securityContext:
         #  capabilities:
