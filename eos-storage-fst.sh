@@ -1,6 +1,8 @@
 #! /bin/bash
 
 set -o errexit	# Bail out on errors
+CWD="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 
 if [ "$#" -ne 5 ]; then
         echo "ERROR: Illegal number of parameters."
@@ -20,12 +22,12 @@ GEOTAG=$4
 SCHEDULING_GROUP=$5
 
 FNAME="eos-storage-fst${FST_NUMBER}.yaml"
-cp eos-storage-fst.template.yaml $FNAME
-sed -i "s/%%%FST_NAME%%%/"${FST_NAME}"/" $FNAME
-sed -i "s/%%%FST_NUMBER%%%/${FST_NUMBER}/" $FNAME
-sed -i "s/%%%FST_CONTAINER_NAME%%%/${FST_CONTAINER_NAME}/" $FNAME
-sed -i "s/%%%MGM_ALIAS%%%/${MGM_ALIAS}/" $FNAME
-sed -i "s/%%%MQ_ALIAS%%%/${MQ_ALIAS}/" $FNAME
-sed -i "s/%%%FST_GEOTAG%%%/${GEOTAG}/" $FNAME
-sed -i "s/%%%FST_SCHEDULING_GROUP%%%/${SCHEDULING_GROUP}/" $FNAME
+cp $CWD/eos-storage-fst.template.yaml $CWD/$FNAME
+sed -i "s/%%%FST_NAME%%%/"${FST_NAME}"/" $CWD/$FNAME
+sed -i "s/%%%FST_NUMBER%%%/${FST_NUMBER}/" $CWD/$FNAME
+sed -i "s/%%%FST_CONTAINER_NAME%%%/${FST_CONTAINER_NAME}/" $CWD/$FNAME
+sed -i "s/%%%MGM_ALIAS%%%/${MGM_ALIAS}/" $CWD/$FNAME
+sed -i "s/%%%MQ_ALIAS%%%/${MQ_ALIAS}/" $CWD/$FNAME
+sed -i "s/%%%FST_GEOTAG%%%/${GEOTAG}/" $CWD/$FNAME
+sed -i "s/%%%FST_SCHEDULING_GROUP%%%/${SCHEDULING_GROUP}/" $CWD/$FNAME
 
