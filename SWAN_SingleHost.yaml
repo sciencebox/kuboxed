@@ -164,7 +164,7 @@ spec:
       ###
       # 3. JupyterHub
       - name: jupyterhub
-        image: gitlab-registry.cern.ch/swan/docker-images/jupyterhub:v1.9
+        image: gitlab-registry.cern.ch/swan/docker-images/jupyterhub:v1.12
         imagePullPolicy: IfNotPresent
        #securityContext:
         #  capabilities:
@@ -233,7 +233,7 @@ spec:
         - name: LDAP_ENDPOINT
           value: "ldap.boxed.svc.cluster.local"
         - name: CONTAINER_IMAGE
-          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.2.0"
+          value: "gitlab-registry.cern.ch/swan/docker-images/systemuser:v5.5.2"
         - name: DOCKER_NETWORK_NAME
           value: "jupyternet"
         - name: CVMFS_FOLDER
